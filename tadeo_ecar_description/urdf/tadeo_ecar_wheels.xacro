@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="tadeo_ecar_wheel" params="prefix x_position y_position wheel_x_offset suspension_rotation">
+    
+    <!-- Joint de suspensión (dirección) -->
+    <joint name="${prefix}_suspension_joint" type="revolute">
+      <parent link="base_link"/>
+      <child link="${prefix}_suspension_link"/>
+      <origin xyz="${x_position} ${y_position} 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-0.5" upper="0.5" effort="100" velocity="1.0"/>
+    </joint>
+
+    <!-- Link de suspensión -->
+    <link name="${prefix}_suspension_link">
+      <visual>
+        <origin xyz="0 0 ${suspension_z_offset}" rpy="0 ${pi} ${suspension_rotation}"/>
+        <geometry>
+          <!-- CORREGIDO: usar file:// con path absoluto -->
+          <mesh filename="file://${pkg_path}/meshes/suspension/suspension.stl" scale="1 1 1"/>
+        </geometry>
+        <material name="gray"/>
+      </visual>
+      
+      <collision>
+        <origin xyz="0 0 ${suspension_z_offset}" rpy="0 ${pi} ${suspension_rotation}"/>
+        <geometry>
+          <box size="0.05 0.05 0.1"/>
+        </geometry>
+      </collision>
+      
+      <inertial>
+        <origin xyz="0 0 ${suspension_z_offset}" rpy="0 ${pi} ${suspension_rotation}"/>
+        <mass value="2.0"/>
+        <inertia ixx="0.01" ixy="0.0" ixz="0.0" 
+                 iyy="0.01" iyz="0.0" 
+                 izz="0.01"/>
+      </inertial>
+    </link>
+
+    <!-- Joint de rueda (rotación) -->
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="${prefix}_suspension_link"/>
+      <child link="${prefix}_wheel_link"/>
+      <origin xyz="${wheel_x_offset} 0 0" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+
+    <!-- Link de rueda -->
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <!-- CORREGIDO: usar file:// con path absoluto -->
+          <mesh filename="file://${pkg_path}/meshes/wheels/wheel.stl" scale="1 1 1"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+      
+      <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_width}"/>
+        </geometry>
+      </collision>
+      
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="3.0"/>
+        <inertia ixx="0.1" ixy="0.0" ixz="0.0" 
+                 iyy="0.1" iyz="0.0" 
+                 izz="0.1"/>
+      </inertial>
+    </link>
+
+  </xacro:macro>
+
+</robot>

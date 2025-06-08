@@ -1,0 +1,173 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:macro name="tadeo_ecar_gazebo">
+
+    <!-- Propiedades físicas para Gazebo -->
+    <gazebo reference="base_link">
+      <material>Gazebo/Blue</material>
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <self_collide>0</self_collide>
+    </gazebo>
+
+    <gazebo reference="chasis_link">
+      <material>Gazebo/Red</material>
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <self_collide>0</self_collide>
+    </gazebo>
+
+    <!-- Propiedades de sensores -->
+    <gazebo reference="camera_link">
+      <material>Gazebo/Black</material>
+    </gazebo>
+
+    <gazebo reference="lidar_link">
+      <material>Gazebo/DarkGray</material>
+    </gazebo>
+
+    <!-- Propiedades de las suspensiones -->
+    <gazebo reference="front_left_suspension_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <gazebo reference="front_right_suspension_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <gazebo reference="rear_left_suspension_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <gazebo reference="rear_right_suspension_link">
+      <material>Gazebo/Grey</material>
+    </gazebo>
+
+    <!-- Propiedades de las ruedas -->
+    <gazebo reference="front_left_wheel_link">
+      <material>Gazebo/Black</material>
+      <mu1>1.0</mu1>
+      <mu2>1.0</mu2>
+    </gazebo>
+
+    <gazebo reference="front_right_wheel_link">
+      <material>Gazebo/Black</material>
+      <mu1>1.0</mu1>
+      <mu2>1.0</mu2>
+    </gazebo>
+
+    <gazebo reference="rear_left_wheel_link">
+      <material>Gazebo/Black</material>
+      <mu1>1.0</mu1>
+      <mu2>1.0</mu2>
+    </gazebo>
+
+    <gazebo reference="rear_right_wheel_link">
+      <material>Gazebo/Black</material>
+      <mu1>1.0</mu1>
+      <mu2>1.0</mu2>
+    </gazebo>
+
+    <!-- Plugin de control diferencial -->
+    <gazebo>
+      <plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+        <update_rate>100</update_rate>
+        
+        <!-- Ruedas -->
+        <left_joint>rear_left_wheel_joint</left_joint>
+        <right_joint>rear_right_wheel_joint</right_joint>
+        
+        <!-- Parámetros del vehículo -->
+        <wheel_separation>${track_width}</wheel_separation>
+        <wheel_diameter>${2*wheel_radius}</wheel_diameter>
+        
+        <!-- Límites -->
+        <max_wheel_torque>200</max_wheel_torque>
+        <max_wheel_acceleration>10.0</max_wheel_acceleration>
+        
+        <!-- Topics ROS -->
+        <command_topic>cmd_vel</command_topic>
+        <odometry_topic>odom</odometry_topic>
+        <odometry_frame>odom</odometry_frame>
+        <robot_base_frame>base_footprint</robot_base_frame>
+        
+        <!-- Publicar transformaciones -->
+        <publish_odom>true</publish_odom>
+        <publish_odom_tf>true</publish_odom_tf>
+        <publish_wheel_tf>false</publish_wheel_tf>
+        
+        <!-- Covarianza -->
+        <pose_covariance_diagonal>[0.001, 0.001, 0.001, 0.001, 0.001, 0.03]</pose_covariance_diagonal>
+        <twist_covariance_diagonal>[0.001, 0.001, 0.001, 0.001, 0.001, 0.03]</twist_covariance_diagonal>
+      </plugin>
+    </gazebo>
+
+    <!-- Plugin de cámara -->
+    <gazebo reference="camera_link">
+      <sensor type="camera" name="camera">
+        <update_rate>30.0</update_rate>
+        <camera name="front_camera">
+          <horizontal_fov>1.3962634</horizontal_fov>
+          <image>
+            <width>800</width>
+            <height>600</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.02</near>
+            <far>300</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.007</stddev>
+          </noise>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+          <frame_name>camera_link</frame_name>
+          <image_topic>/camera/image_raw</image_topic>
+          <camera_info_topic>/camera/camera_info</camera_info_topic>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+    <!-- Plugin de LiDAR - CORREGIDO -->
+    <gazebo reference="lidar_link">
+      <sensor type="ray" name="lidar">
+        <!-- ELIMINAR el tag <pose> que causaba el problema -->
+        <visualize>true</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>720</samples>
+              <resolution>1</resolution>
+              <min_angle>-1.570796</min_angle>
+              <max_angle>1.570796</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.10</min>
+            <max>30.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="lidar_controller" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <remapping>~/out:=scan</remapping>
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+          <frame_name>lidar_link</frame_name>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+
+</robot>
