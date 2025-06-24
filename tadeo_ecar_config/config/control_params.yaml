@@ -1,0 +1,88 @@
+# Control System Parameters for Tadeo eCar
+
+# Controller update rates
+controller:
+  update_rate: 50  # Hz
+  publish_rate: 50  # Hz
+  
+# 4WD4WS Controller Parameters
+fourwd4ws_controller:
+  # Wheel controllers
+  wheel_controllers:
+    front_left:
+      p_gain: 1000.0
+      i_gain: 10.0
+      d_gain: 5.0
+      max_effort: 50.0
+      
+    front_right:
+      p_gain: 1000.0
+      i_gain: 10.0
+      d_gain: 5.0
+      max_effort: 50.0
+      
+    rear_left:
+      p_gain: 1000.0
+      i_gain: 10.0
+      d_gain: 5.0
+      max_effort: 50.0
+      
+    rear_right:
+      p_gain: 1000.0
+      i_gain: 10.0
+      d_gain: 5.0
+      max_effort: 50.0
+      
+  # Steering controllers
+  steering_controllers:
+    front_left:
+      p_gain: 500.0
+      i_gain: 5.0
+      d_gain: 2.0
+      max_effort: 25.0
+      
+    front_right:
+      p_gain: 500.0
+      i_gain: 5.0
+      d_gain: 2.0
+      max_effort: 25.0
+      
+    rear_left:
+      p_gain: 500.0
+      i_gain: 5.0
+      d_gain: 2.0
+      max_effort: 25.0
+      
+    rear_right:
+      p_gain: 500.0
+      i_gain: 5.0
+      d_gain: 2.0
+      max_effort: 25.0
+
+# Velocity command limits
+cmd_vel_limits:
+  linear:
+    x:
+      max_velocity: 2.0
+      max_acceleration: 1.5
+      max_deceleration: 2.0
+      
+  angular:
+    z:
+      max_velocity: 1.0
+      max_acceleration: 2.0
+      max_deceleration: 2.0
+
+# Deadman switch and safety
+safety:
+  enable_deadman_switch: true
+  deadman_timeout: 0.5  # seconds
+  emergency_stop_deceleration: 3.0  # m/s²
+  
+# Filter parameters
+filters:
+  velocity_filter:
+    cutoff_frequency: 10.0  # Hz
+    
+  steering_filter:
+    cutoff_frequency: 5.0   # Hz

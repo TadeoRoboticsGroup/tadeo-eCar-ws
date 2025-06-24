@@ -1,0 +1,24 @@
+# Goal: Navigate to target pose
+geometry_msgs/PoseStamped target_pose
+float32 tolerance_distance
+float32 tolerance_angle
+float32 max_speed
+bool use_obstacle_avoidance
+string planner_id
+---
+# Result: Navigation completion
+bool success
+string message
+float32 final_distance_error
+float32 final_angle_error
+float32 navigation_time
+float32 path_length
+uint32 replanning_count
+---
+# Feedback: Navigation progress
+geometry_msgs/PoseStamped current_pose
+float32 distance_remaining
+float32 estimated_time_remaining
+float32 current_speed
+string current_behavior
+uint32 obstacles_detected

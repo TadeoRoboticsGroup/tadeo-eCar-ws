@@ -1,0 +1,16 @@
+# Request: Set robot operational mode
+uint8 IDLE = 0
+uint8 MANUAL = 1
+uint8 AUTONOMOUS = 2
+uint8 EMERGENCY = 3
+uint8 MAINTENANCE = 4
+
+uint8 requested_mode
+string reason
+bool force_change
+---
+# Response: Mode change result
+bool success
+string message
+uint8 current_mode
+float64 mode_change_time

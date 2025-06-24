@@ -1,0 +1,12 @@
+# Request: Emergency stop control
+bool activate_estop
+string reason
+uint8 priority_level
+bool override_safety_checks
+---
+# Response: Emergency stop result
+bool success
+string message
+bool estop_active
+float64 stop_time
+string[] safety_systems_status

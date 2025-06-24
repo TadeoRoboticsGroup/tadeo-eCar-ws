@@ -1,0 +1,25 @@
+# Goal: System calibration
+uint8 SENSORS = 0
+uint8 ACTUATORS = 1
+uint8 NAVIGATION = 2
+uint8 FULL_SYSTEM = 3
+
+uint8 calibration_type
+bool auto_calibration
+string[] specific_components
+float32 timeout_seconds
+---
+# Result: Calibration completion
+bool success
+string message
+float32 calibration_accuracy
+string[] calibrated_components
+string[] failed_components
+float32 total_time
+---
+# Feedback: Calibration progress
+string current_component
+float32 progress_percentage
+float32 current_accuracy
+string status_message
+float32 estimated_time_remaining

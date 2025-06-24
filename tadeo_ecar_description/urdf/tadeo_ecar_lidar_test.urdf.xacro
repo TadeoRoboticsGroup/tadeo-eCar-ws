@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<robot name="tadeo_ecar" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- AGREGAR: parámetro para package path -->
+  <xacro:arg name="pkg_path" default=""/>
+  <xacro:property name="pkg_path" value="$(arg pkg_path)"/>
+
+  <!-- Incluir archivos de componentes -->
+  <xacro:include filename="$(find tadeo_ecar_description)/urdf/materials.xacro"/>
+  <xacro:include filename="$(find tadeo_ecar_description)/urdf/tadeo_ecar_base_lidar_only.xacro"/>
+  <xacro:include filename="$(find tadeo_ecar_description)/urdf/tadeo_ecar_wheels.xacro"/>
+  <xacro:include filename="$(find tadeo_ecar_description)/urdf/gazebo_ignition_lidar_only.xacro"/>
+
+  <!-- Parámetros principales del vehículo -->
+  <xacro:property name="chassis_length" value="1.2"/>
+  <xacro:property name="chassis_width" value="0.8"/>
+  <xacro:property name="chassis_height" value="0.4"/>
+  <xacro:property name="chassis_z_offset" value="0.155"/>
+
+  <!-- Parámetros de ruedas -->
+  <xacro:property name="wheel_radius" value="0.1"/>
+  <xacro:property name="wheel_width" value="0.05"/>
+
+  <!-- Parámetros de suspensión -->
+  <xacro:property name="suspension_z_offset" value="0.227"/>
+  <xacro:property name="wheel_x_offset_front" value="0.05"/>
+  <xacro:property name="wheel_x_offset_rear" value="-0.05"/>
+
+  <!-- Dimensiones del vehículo -->
+  <xacro:property name="wheelbase" value="1.058"/>
+  <xacro:property name="track_width" value="0.55"/>
+
+  <!-- Posiciones calculadas de las ruedas -->
+  <xacro:property name="front_wheel_x" value="0.478"/>
+  <xacro:property name="rear_wheel_x" value="-0.58"/>
+  <xacro:property name="left_wheel_y" value="0.275"/>
+  <xacro:property name="right_wheel_y" value="-0.275"/>
+
+  <!-- Parámetros de sensores -->
+  <xacro:property name="lidar_radius" value="0.04"/>
+  <xacro:property name="lidar_height" value="0.06"/>
+
+  <!-- Link base (referencia del suelo) -->
+  <link name="base_footprint"/>
+
+  <!-- Incluir componente del chasis CON SOLO LIDAR -->
+  <xacro:tadeo_ecar_base_lidar_only/>
+
+  <!-- Ruedas delanteras -->
+  <xacro:tadeo_ecar_wheel 
+    prefix="front_left"
+    x_position="${front_wheel_x}"
+    y_position="${left_wheel_y}"
+    wheel_x_offset="${wheel_x_offset_front}"
+    suspension_rotation="${pi}"/>
+
+  <xacro:tadeo_ecar_wheel 
+    prefix="front_right"
+    x_position="${front_wheel_x}"
+    y_position="${right_wheel_y}"
+    wheel_x_offset="${wheel_x_offset_front}"
+    suspension_rotation="${-pi}"/>
+
+  <!-- Ruedas traseras -->
+  <xacro:tadeo_ecar_wheel 
+    prefix="rear_left"
+    x_position="${rear_wheel_x}"
+    y_position="${left_wheel_y}"
+    wheel_x_offset="${wheel_x_offset_rear}"
+    suspension_rotation="0.0"/>
+
+  <xacro:tadeo_ecar_wheel 
+    prefix="rear_right"
+    x_position="${rear_wheel_x}"
+    y_position="${right_wheel_y}"
+    wheel_x_offset="${wheel_x_offset_rear}"
+    suspension_rotation="0.0"/>
+
+  <!-- Incluir plugins de Gazebo CON SOLO LIDAR -->
+  <xacro:tadeo_ecar_gazebo_ignition_lidar_only/>
+
+</robot>

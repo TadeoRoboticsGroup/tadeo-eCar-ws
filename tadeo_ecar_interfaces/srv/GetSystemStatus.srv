@@ -1,0 +1,18 @@
+# Request: Get comprehensive system status
+bool include_diagnostics
+bool include_performance_metrics
+bool include_error_history
+---
+# Response: Complete system status
+tadeo_ecar_msgs/RobotStatus robot_status
+tadeo_ecar_msgs/SystemHealth system_health
+tadeo_ecar_msgs/SafetyStatus safety_status
+tadeo_ecar_msgs/WheelStates wheel_states
+
+# Additional diagnostics
+string[] active_nodes
+string[] failed_nodes
+float32 system_load
+uint64 total_runtime
+string software_version
+string hardware_revision

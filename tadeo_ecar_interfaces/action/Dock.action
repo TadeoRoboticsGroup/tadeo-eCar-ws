@@ -1,0 +1,27 @@
+# Goal: Autonomous docking
+geometry_msgs/PoseStamped dock_pose
+string dock_id
+float32 approach_speed
+float32 final_precision
+bool use_visual_guidance
+---
+# Result: Docking completion
+bool success
+string message
+float32 final_position_error
+float32 final_orientation_error
+float32 docking_time
+bool charging_connected
+---
+# Feedback: Docking progress
+uint8 APPROACHING = 0
+uint8 ALIGNING = 1
+uint8 FINE_POSITIONING = 2
+uint8 CONNECTING = 3
+
+uint8 docking_phase
+float32 distance_to_dock
+float32 alignment_error
+geometry_msgs/PoseStamped current_pose
+bool dock_visible
+float32 approach_speed

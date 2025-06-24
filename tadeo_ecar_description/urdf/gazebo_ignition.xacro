@@ -3,6 +3,7 @@
 
   <xacro:macro name="tadeo_ecar_gazebo_ignition">
 
+
     <!-- Propiedades físicas para Ignition Gazebo -->
     <gazebo reference="base_link">
       <material>
@@ -130,8 +131,9 @@
     </gazebo>
 
     <!-- Plugin de cámara para Ignition -->
+    <!-- Plugin de cámara para Ignition - MEJORADO -->
     <gazebo reference="camera_link">
-      <sensor name="camera" type="camera">
+      <sensor name="camera_sensor" type="camera">
         <pose>0 0 0 0 0 0</pose>
         <topic>camera</topic>
         <update_rate>30</update_rate>
@@ -152,13 +154,22 @@
             <mean>0.0</mean>
             <stddev>0.007</stddev>
           </noise>
+          <distortion>
+            <k1>0.0</k1>
+            <k2>0.0</k2>
+            <k3>0.0</k3>
+            <p1>0.0</p1>
+            <p2>0.0</p2>
+            <center>0.5 0.5</center>
+          </distortion>
         </camera>
       </sensor>
     </gazebo>
 
     <!-- Plugin de LiDAR para Ignition -->
+    <!-- Plugin de LiDAR para Ignition - MEJORADO -->
     <gazebo reference="lidar_link">
-      <sensor name="lidar" type="gpu_lidar">
+      <sensor name="lidar_sensor" type="gpu_lidar">
         <pose>0 0 0 0 0 0</pose>
         <topic>scan</topic>
         <update_rate>10</update_rate>
@@ -168,8 +179,8 @@
             <horizontal>
               <samples>720</samples>
               <resolution>1</resolution>
-              <min_angle>-1.570796</min_angle>
-              <max_angle>1.570796</max_angle>
+              <min_angle>-3.141593</min_angle>
+              <max_angle>3.141593</max_angle>
             </horizontal>
             <vertical>
               <samples>1</samples>

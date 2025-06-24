@@ -1,0 +1,97 @@
+# Tadeo eCar Robot Configuration Parameters
+
+robot:
+  name: "tadeo_ecar"
+  id: "tadeo_ecar_01"
+  version: "1.0.0"
+  
+  # Physical dimensions (meters)
+  dimensions:
+    length: 1.2
+    width: 0.8
+    height: 0.4
+    wheelbase: 1.058
+    track_width: 0.55
+    ground_clearance: 0.05
+    
+  # Weight and inertia
+  mass: 75.0  # kg
+  max_payload: 25.0  # kg
+  
+# Wheel and drivetrain configuration
+drivetrain:
+  type: "4WD4WS"  # 4-wheel drive, 4-wheel steering
+  
+  wheels:
+    radius: 0.1  # meters
+    width: 0.05  # meters
+    mass: 3.0    # kg each
+    
+  # Steering limits (radians)
+  steering:
+    max_angle: 0.5      # ~28.6 degrees
+    max_rate: 1.0       # rad/s
+    
+  # Drive limits
+  drive:
+    max_speed: 2.0      # m/s
+    max_acceleration: 1.5  # m/s²
+    max_torque: 50.0    # Nm per wheel
+    
+# Sensor configuration
+sensors:
+  lidar:
+    frame_id: "lidar_link"
+    topic: "/scan"
+    rate: 10  # Hz
+    range_min: 0.1  # meters
+    range_max: 30.0  # meters
+    angle_min: -3.14159  # radians
+    angle_max: 3.14159   # radians
+    
+  camera:
+    frame_id: "camera_link"
+    topic: "/camera"
+    rate: 30  # Hz
+    width: 640
+    height: 480
+    fov: 1.047  # 60 degrees in radians
+    
+  imu:
+    frame_id: "base_link"
+    topic: "/imu"
+    rate: 100  # Hz
+    
+# Safety parameters
+safety:
+  emergency_stop:
+    max_deceleration: 3.0  # m/s²
+    stop_distance: 0.5     # meters
+    
+  collision_avoidance:
+    min_obstacle_distance: 0.3  # meters
+    warning_distance: 1.0       # meters
+    reaction_time: 0.2          # seconds
+    
+  speed_limits:
+    indoor_max: 0.5    # m/s
+    outdoor_max: 2.0   # m/s
+    manual_max: 1.0    # m/s
+    
+# Navigation parameters
+navigation:
+  tolerances:
+    position: 0.1      # meters
+    orientation: 0.1   # radians
+    
+  planning:
+    lookahead_distance: 2.0    # meters
+    path_resolution: 0.05      # meters
+    timeout: 30.0              # seconds
+    
+  control:
+    update_rate: 20     # Hz
+    velocity_smoother:
+      max_velocity: 2.0
+      max_acceleration: 1.5
+      max_deceleration: 2.0

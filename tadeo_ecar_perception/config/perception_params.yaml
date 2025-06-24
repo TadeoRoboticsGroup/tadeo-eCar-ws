@@ -1,0 +1,159 @@
+# Tadeo eCar Perception System Configuration
+
+# Camera Processor Parameters
+camera_processor:
+  ros__parameters:
+    # General settings
+    processing_frequency: 30.0          # Camera processing frequency (Hz)
+    debug_mode: false                   # Enable debug visualization
+    
+    # Camera calibration
+    camera_matrix: [640.0, 0.0, 320.0,
+                   0.0, 640.0, 240.0,
+                   0.0, 0.0, 1.0]       # 3x3 camera intrinsic matrix
+    distortion_coeffs: [0.0, 0.0, 0.0, 0.0, 0.0]  # Distortion coefficients
+    
+    # Object detection
+    enable_object_detection: true       # Enable object detection
+    detection_confidence_threshold: 0.5 # Minimum confidence for detections
+    nms_threshold: 0.4                  # Non-maximum suppression threshold
+    detection_classes: ["person", "car", "truck", "bicycle", "motorcycle", "bus"]
+    
+    # Lane detection
+    enable_lane_detection: true         # Enable lane detection
+    roi_top_ratio: 0.6                  # ROI top boundary (ratio of image height)
+    roi_bottom_ratio: 1.0               # ROI bottom boundary
+    canny_low_threshold: 50             # Canny edge detection low threshold
+    canny_high_threshold: 150           # Canny edge detection high threshold
+    hough_rho: 1                        # Hough transform rho resolution
+    hough_theta: 0.017453292            # Hough transform theta resolution (1 degree)
+    hough_threshold: 20                 # Hough transform threshold
+    hough_min_line_length: 40           # Minimum line length
+    hough_max_line_gap: 100             # Maximum line gap
+    
+    # Depth estimation
+    enable_depth_estimation: false      # Enable monocular depth estimation
+    depth_model_path: ""                # Path to depth estimation model
+    
+    # Frame IDs
+    camera_frame: "camera_link"         # Camera frame ID
+    base_frame: "base_link"             # Base frame ID
+
+# LiDAR Processor Parameters  
+lidar_processor:
+  ros__parameters:
+    # General settings
+    processing_frequency: 20.0          # LiDAR processing frequency (Hz)
+    debug_mode: false                   # Enable debug visualization
+    
+    # Point cloud filtering
+    enable_filtering: true              # Enable point cloud filtering
+    voxel_leaf_size: 0.05              # Voxel grid leaf size (m)
+    passthrough_filter_limits: [-10.0, 10.0, -10.0, 10.0, -2.0, 3.0]  # [xmin, xmax, ymin, ymax, zmin, zmax]
+    
+    # Ground plane removal
+    enable_ground_removal: true         # Enable ground plane removal
+    ground_distance_threshold: 0.1      # Distance threshold for ground plane (m)
+    ground_max_iterations: 1000         # RANSAC max iterations for ground detection
+    
+    # Clustering
+    enable_clustering: true             # Enable point cloud clustering
+    cluster_tolerance: 0.3              # Clustering tolerance (m)
+    min_cluster_size: 10                # Minimum cluster size
+    max_cluster_size: 1000              # Maximum cluster size
+    
+    # Obstacle detection
+    enable_obstacle_detection: true     # Enable obstacle detection
+    obstacle_height_threshold: 0.2      # Minimum height for obstacles (m)
+    obstacle_max_height: 3.0            # Maximum height for obstacles (m)
+    
+    # Segmentation
+    enable_segmentation: true           # Enable plane segmentation
+    plane_distance_threshold: 0.02      # Distance threshold for plane segmentation (m)
+    plane_max_iterations: 100           # RANSAC max iterations for plane segmentation
+    
+    # Frame IDs
+    lidar_frame: "lidar_link"           # LiDAR frame ID
+    base_frame: "base_link"             # Base frame ID
+    map_frame: "map"                    # Map frame ID
+
+# IMU Processor Parameters
+imu_processor:
+  ros__parameters:
+    # General settings
+    processing_frequency: 100.0         # IMU processing frequency (Hz)
+    debug_mode: false                   # Enable debug output
+    
+    # Filtering
+    enable_filtering: true              # Enable IMU data filtering
+    gyro_filter_alpha: 0.9             # Gyroscope low-pass filter coefficient
+    accel_filter_alpha: 0.9            # Accelerometer low-pass filter coefficient
+    mag_filter_alpha: 0.8              # Magnetometer low-pass filter coefficient
+    
+    # Calibration
+    enable_calibration: true            # Enable IMU calibration
+    gyro_bias: [0.0, 0.0, 0.0]         # Gyroscope bias (rad/s)
+    accel_bias: [0.0, 0.0, 0.0]        # Accelerometer bias (m/s²)
+    mag_bias: [0.0, 0.0, 0.0]          # Magnetometer bias
+    
+    # Orientation estimation
+    enable_orientation_estimation: true  # Enable orientation estimation
+    orientation_filter_type: "madgwick" # Filter type: "madgwick", "mahony", "ekf"
+    madgwick_beta: 0.1                  # Madgwick filter beta parameter
+    mahony_kp: 0.5                     # Mahony filter proportional gain
+    mahony_ki: 0.0                     # Mahony filter integral gain
+    
+    # Gravity compensation
+    gravity_magnitude: 9.81             # Local gravity magnitude (m/s²)
+    enable_gravity_compensation: true   # Enable gravity compensation
+    
+    # Frame IDs
+    imu_frame: "imu_link"              # IMU frame ID
+    base_frame: "base_link"            # Base frame ID
+
+# Sensor Fusion Parameters
+sensor_fusion:
+  ros__parameters:
+    # General settings
+    fusion_frequency: 20.0              # Sensor fusion frequency (Hz)
+    debug_mode: false                   # Enable debug visualization
+    
+    # Data sources
+    use_camera_data: true               # Use camera data in fusion
+    use_lidar_data: true                # Use LiDAR data in fusion
+    use_imu_data: true                  # Use IMU data in fusion
+    
+    # Fusion weights
+    camera_weight: 0.3                  # Camera data weight
+    lidar_weight: 0.5                   # LiDAR data weight
+    imu_weight: 0.2                     # IMU data weight
+    
+    # Temporal alignment
+    max_time_difference: 0.1            # Maximum time difference for data alignment (s)
+    enable_temporal_alignment: true     # Enable temporal data alignment
+    
+    # Object fusion
+    enable_object_fusion: true          # Enable multi-sensor object fusion
+    object_association_threshold: 1.0   # Distance threshold for object association (m)
+    min_detection_confidence: 0.6       # Minimum confidence for fused detections
+    
+    # Environmental perception
+    enable_environment_mapping: true    # Enable environmental mapping
+    occupancy_resolution: 0.1           # Occupancy grid resolution (m)
+    occupancy_width: 200                # Occupancy grid width (cells)
+    occupancy_height: 200               # Occupancy grid height (cells)
+    
+    # Tracking
+    enable_tracking: true               # Enable object tracking
+    tracking_max_distance: 2.0          # Maximum distance for tracking association (m)
+    tracking_max_age: 5                 # Maximum age for tracks (frames)
+    tracking_min_hits: 3                # Minimum hits to confirm track
+    
+    # Frame IDs
+    base_frame: "base_link"             # Base frame ID
+    map_frame: "map"                    # Map frame ID
+    
+    # Health monitoring
+    enable_health_monitoring: true      # Enable system health monitoring
+    data_timeout_threshold: 1.0         # Data timeout threshold (s)
+    processing_time_threshold: 0.05     # Processing time threshold (s)

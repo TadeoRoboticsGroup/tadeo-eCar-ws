@@ -1,0 +1,22 @@
+# Goal: Follow predefined path
+nav_msgs/Path path
+float32 target_speed
+float32 path_tolerance
+bool allow_reversing
+bool strict_timing
+---
+# Result: Path following completion
+bool success
+string message
+float32 path_completion_percentage
+float32 average_speed
+float32 max_deviation
+float32 execution_time
+---
+# Feedback: Path following progress
+uint32 current_waypoint_index
+float32 distance_to_next_waypoint
+float32 path_progress_percentage
+float32 current_speed
+float32 cross_track_error
+geometry_msgs/PoseStamped current_pose

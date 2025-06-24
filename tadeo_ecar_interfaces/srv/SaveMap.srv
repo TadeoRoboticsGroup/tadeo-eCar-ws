@@ -1,0 +1,14 @@
+# Request: Save current map
+string map_name
+string map_description
+bool include_metadata
+bool compress_map
+string save_directory
+---
+# Response: Map save result
+bool success
+string message
+string map_file_path
+float32 map_size_mb
+uint32 map_resolution
+geometry_msgs/Point map_origin

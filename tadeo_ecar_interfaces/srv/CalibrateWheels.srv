@@ -1,0 +1,18 @@
+# Request: Calibrate wheel controllers
+uint8 ALL_WHEELS = 0
+uint8 FRONT_WHEELS = 1
+uint8 REAR_WHEELS = 2
+uint8 STEERING_ONLY = 3
+uint8 DRIVE_ONLY = 4
+
+uint8 calibration_type
+bool reset_encoders
+float32 max_calibration_time
+---
+# Response: Calibration result
+bool success
+string message
+float32 calibration_duration
+float32[] wheel_offsets
+float32[] steering_limits
+string[] calibration_errors

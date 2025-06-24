@@ -2,8 +2,6 @@
 <robot name="tadeo_ecar" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <!-- AGREGAR: parámetro para package path -->
-  <xacro:arg name="pkg_path" default=""/>
-  <xacro:property name="pkg_path" value="$(arg pkg_path)"/>
 
   <!-- Incluir archivos de componentes -->
   <xacro:include filename="$(find tadeo_ecar_description)/urdf/materials.xacro"/>
