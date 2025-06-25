@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypeset="xml"?>
+<package format="3">
+  <name>tadeo_ecar_behavior</name>
+  <version>1.0.0</version>
+  <description>
+    Sistema de comportamientos y árboles de decisión para el robot autónomo Tadeo eCar.
+    Implementa comportamientos complejos usando BehaviorTree.CPP para toma de decisiones
+    inteligente, gestión de estados y coordinación entre subsistemas.
+  </description>
+  
+  <maintainer email="tadeo@ecar.com">Tadeo eCar Team</maintainer>
+  <license>MIT</license>
+  
+  <url type="website">https://github.com/tadeo-ecar/tadeo_ecar_behavior</url>
+  <url type="bugtracker">https://github.com/tadeo-ecar/tadeo_ecar_behavior/issues</url>
+  <url type="repository">https://github.com/tadeo-ecar/tadeo_ecar_behavior</url>
+  
+  <author email="tadeo@ecar.com">Tadeo eCar Development Team</author>
+  
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  
+  <!-- Core ROS2 dependencies -->
+  <depend>rclcpp</depend>
+  <depend>rclcpp_action</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>visualization_msgs</depend>
+  
+  <!-- Transform libraries -->
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+  
+  <!-- BehaviorTree dependencies -->
+  <depend>behaviortree_cpp_v3</depend>
+  <depend>nav2_behavior_tree</depend>
+  <depend>nav2_msgs</depend>
+  
+  <!-- Tadeo eCar custom packages -->
+  <depend>tadeo_ecar_msgs</depend>
+  <depend>tadeo_ecar_interfaces</depend>
+  
+  <!-- Utility libraries -->
+  <depend>yaml-cpp</depend>
+  <depend>eigen3_cmake_module</depend>
+  <depend>Eigen3</depend>
+  
+  <!-- Navigation and control -->
+  <depend>nav2_util</depend>
+  <depend>nav2_core</depend>
+  
+  <!-- Testing dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_gtest</test_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

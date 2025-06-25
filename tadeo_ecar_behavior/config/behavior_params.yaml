@@ -1,0 +1,263 @@
+# Parámetros de configuración para el sistema de comportamientos del Tadeo eCar
+# Configuración para el gestor de comportamientos y árboles de decisión
+
+# ===========================
+# BEHAVIOR MANAGER NODE
+# ===========================
+behavior_manager_node:
+  ros__parameters:
+    # Frecuencia del sistema de comportamientos
+    behavior_frequency: 10.0  # Hz - Frecuencia de tick del árbol de comportamientos
+    
+    # Configuración de árboles de comportamientos
+    default_tree_file: "main_behavior.xml"  # Archivo XML del árbol por defecto
+    behavior_trees_path: "/opt/ros/humble/share/tadeo_ecar_behavior/behavior_trees/"  # Directorio de árboles
+    
+    # Logging y monitoreo
+    enable_behavior_logging: true      # Habilitar logging detallado de comportamientos
+    enable_groot_monitoring: false    # Habilitar monitoreo con Groot (requiere instalación)
+    groot_publisher_port: 1666        # Puerto para publicador ZMQ de Groot
+    
+    # Configuración de timeouts
+    behavior_timeout_default: 30.0    # segundos - Timeout por defecto para comportamientos
+    
+    # Límites del sistema
+    max_concurrent_behaviors: 5       # Máximo número de comportamientos concurrentes
+    
+    # Recovery automático
+    auto_recovery_enabled: true       # Habilitar recovery automático
+    
+    # Marcos de referencia
+    base_frame: "base_link"           # Marco de referencia del robot
+    map_frame: "map"                  # Marco de referencia del mapa
+
+# ===========================
+# CONFIGURACIÓN DE COMPORTAMIENTOS ESPECÍFICOS
+# ===========================
+
+# Configuración de navegación
+navigation_behavior:
+  # Parámetros de navegación
+  goal_tolerance: 0.3               # metros - Tolerancia para alcanzar objetivos
+  navigation_timeout: 120.0         # segundos - Timeout para navegación
+  max_retries: 3                    # Máximo número de reintentos
+  
+  # Recovery para navegación
+  recovery_enabled: true            # Habilitar comportamientos de recovery
+  recovery_timeout: 30.0            # segundos - Timeout para recovery
+  
+  # Velocidades máximas
+  max_linear_velocity: 1.5          # m/s
+  max_angular_velocity: 1.0         # rad/s
+
+# Configuración de patrullaje
+patrol_behavior:
+  # Rutas de patrullaje
+  default_patrol_route: "patrol_route_1"  # Ruta por defecto
+  patrol_point_tolerance: 0.5      # metros - Tolerancia en puntos de patrullaje
+  patrol_speed: 0.8                # m/s - Velocidad durante patrullaje
+  
+  # Tiempos de patrullaje
+  scan_duration: 5.0               # segundos - Duración del escaneo en cada punto
+  patrol_pause: 2.0                # segundos - Pausa en cada punto
+  
+  # Recovery para patrullaje
+  max_patrol_retries: 2            # Máximo reintentos por punto
+  skip_failed_points: true         # Saltar puntos que fallan repetidamente
+  
+  # Logging de patrullaje
+  enable_patrol_logging: true      # Guardar logs de patrullaje
+  patrol_log_path: "/tmp/tadeo_patrol_logs/"  # Directorio de logs
+
+# Configuración de exploración
+exploration_behavior:
+  # Estrategias de exploración
+  exploration_strategy: "frontier"  # Estrategia: frontier, systematic, random
+  frontier_min_size: 5             # Tamaño mínimo de frontera (celdas)
+  exploration_gain_threshold: 10   # Ganancia mínima de información
+  
+  # Parámetros de exploración
+  exploration_range: 10.0          # metros - Rango máximo de exploración
+  completion_threshold: 0.95       # Porcentaje de completitud para terminar
+  
+  # Safety durante exploración
+  safe_distance: 1.0               # metros - Distancia segura a obstáculos
+  battery_reserve: 0.3             # Reserva de batería para exploración
+  
+  # Mapeo
+  map_update_frequency: 2.0        # Hz - Frecuencia de actualización del mapa
+  save_exploration_map: true       # Guardar mapa de exploración
+
+# Configuración de batería y carga
+battery_behavior:
+  # Umbrales de batería
+  critical_battery_level: 0.15     # Nivel crítico - forzar carga inmediata
+  low_battery_level: 0.25          # Nivel bajo - buscar estación de carga
+  full_battery_level: 0.95         # Nivel completo - terminar carga
+  
+  # Gestión de carga
+  charging_timeout: 3600.0         # segundos - Timeout máximo para carga completa
+  docking_retries: 3               # Intentos de acoplamiento
+  docking_precision: 0.1           # metros - Precisión requerida para docking
+  
+  # Estaciones de carga
+  charging_stations:
+    - name: "station_1"
+      x: 0.0
+      y: 0.0
+      theta: 0.0
+    - name: "station_2" 
+      x: 5.0
+      y: 5.0
+      theta: 1.57
+
+# Configuración de emergencia y safety
+emergency_behavior:
+  # Detección de emergencias
+  emergency_stop_timeout: 2.0      # segundos - Tiempo para parada completa
+  emergency_clearance_time: 5.0    # segundos - Tiempo antes de reanudar
+  
+  # Alertas de emergencia
+  send_emergency_alerts: true      # Enviar alertas automáticas
+  emergency_contact_enabled: false # Contactar supervisor humano
+  
+  # Recovery de emergencia
+  emergency_recovery_enabled: true # Habilitar recovery automático post-emergencia
+  emergency_recovery_delay: 10.0   # segundos - Retraso antes de recovery
+
+# Configuración de recovery
+recovery_behavior:
+  # Estrategias de recovery
+  enable_rotate_recovery: true     # Habilitar rotación de recovery
+  enable_backup_recovery: true     # Habilitar retroceso de recovery
+  enable_clear_costmap: true       # Habilitar limpieza de costmaps
+  
+  # Parámetros de recovery
+  rotate_recovery_angle: 6.28      # radianes - Ángulo de rotación (360°)
+  backup_recovery_distance: 0.5    # metros - Distancia de retroceso
+  recovery_attempt_limit: 5        # Máximo intentos de recovery
+  
+  # Timeouts de recovery
+  rotate_timeout: 15.0             # segundos - Timeout para rotación
+  backup_timeout: 10.0             # segundos - Timeout para retroceso
+  
+  # Escalado de recovery
+  escalate_recovery: true          # Escalar a estrategias más agresivas
+  escalation_delay: 5.0            # segundos - Retraso entre escalaciones
+
+# ===========================
+# CONFIGURACIÓN DE MONITOREO Y MÉTRICAS
+# ===========================
+behavior_monitoring:
+  # Frecuencias de monitoreo
+  health_check_frequency: 1.0      # Hz - Frecuencia de checks de salud
+  metrics_update_frequency: 0.5    # Hz - Frecuencia de actualización de métricas
+  
+  # Umbrales de rendimiento
+  success_rate_threshold: 0.8      # Tasa de éxito mínima aceptable
+  max_behavior_failures: 5         # Máximo fallos antes de intervención
+  
+  # Logging y persistencia
+  enable_behavior_metrics: true    # Habilitar métricas de comportamientos
+  save_behavior_history: true      # Guardar historial de comportamientos
+  behavior_log_path: "/tmp/tadeo_behavior_logs/"  # Directorio de logs
+  
+  # Alertas
+  enable_performance_alerts: true  # Alertas por rendimiento degradado
+  alert_on_repeated_failures: true # Alertar en fallos repetidos
+
+# ===========================
+# CONFIGURACIÓN DE BLACKBOARD
+# ===========================
+blackboard_config:
+  # Valores iniciales del blackboard
+  initial_values:
+    robot_state: "IDLE"
+    battery_threshold_critical: 0.15
+    battery_threshold_low: 0.25
+    navigation_timeout: 120.0
+    patrol_enabled: false
+    exploration_enabled: false
+    mission_active: false
+    
+  # Persistencia del blackboard
+  save_blackboard_state: true      # Guardar estado del blackboard
+  blackboard_save_interval: 30.0   # segundos - Intervalo de guardado
+  
+  # Sincronización
+  blackboard_sync_frequency: 5.0   # Hz - Frecuencia de sincronización
+
+# ===========================
+# CONFIGURACIÓN DE ÁRBOLES ESPECÍFICOS
+# ===========================
+
+# Configuración del árbol principal
+main_behavior_tree:
+  # Configuración del tick
+  tick_frequency: 10.0             # Hz - Frecuencia de tick del árbol
+  
+  # Timeouts específicos
+  safety_check_timeout: 5.0        # segundos
+  battery_check_timeout: 2.0       # segundos
+  navigation_check_timeout: 10.0   # segundos
+  
+  # Reintentos
+  max_tree_failures: 3             # Máximo fallos del árbol antes de reset
+  
+  # Auto-restart
+  auto_restart_on_completion: true # Reiniciar árbol al completarse
+  restart_delay: 2.0               # segundos - Retraso antes de reiniciar
+
+# Configuración específica para patrol_behavior.xml
+patrol_tree_config:
+  patrol_loop_infinite: true       # Loop infinito de patrullaje
+  patrol_point_wait_time: 3.0      # segundos - Espera en cada punto
+  patrol_scan_360: true            # Escaneo completo en cada punto
+  
+# Configuración específica para exploration_behavior.xml  
+exploration_tree_config:
+  frontier_exploration_enabled: true    # Habilitar exploración por fronteras
+  systematic_exploration_enabled: false # Deshabilitar exploración sistemática
+  random_exploration_fallback: true     # Usar exploración aleatoria como fallback
+  
+  # Parámetros de frontera
+  min_frontier_size: 10            # Celdas mínimas para considerar frontera
+  max_exploration_distance: 15.0   # metros - Distancia máxima de exploración
+
+# ===========================
+# CONFIGURACIÓN DE INTEGRACIÓN
+# ===========================
+system_integration:
+  # Integración con otros sistemas
+  use_navigation_system: true      # Integrar con sistema de navegación
+  use_perception_system: true      # Integrar con sistema de percepción
+  use_safety_system: true          # Integrar con sistema de seguridad
+  
+  # Sincronización entre sistemas
+  wait_for_navigation_ready: true  # Esperar que navegación esté lista
+  wait_for_perception_ready: true  # Esperar que percepción esté lista
+  system_ready_timeout: 30.0       # segundos - Timeout para sistemas listos
+  
+  # Health checks de integración
+  check_system_health: true        # Verificar salud de sistemas integrados
+  system_health_timeout: 5.0       # segundos - Timeout para health checks
+
+# ===========================
+# CONFIGURACIÓN DE DEBUGGING
+# ===========================
+debugging:
+  # Niveles de debug
+  enable_debug_mode: false         # Habilitar modo debug (reduce rendimiento)
+  debug_level: "INFO"              # Nivel de debug: DEBUG, INFO, WARN, ERROR
+  
+  # Visualización
+  enable_behavior_visualization: true    # Habilitar visualización en RViz
+  visualization_update_rate: 2.0   # Hz - Frecuencia de actualización visual
+  
+  # Profiling
+  enable_performance_profiling: false    # Habilitar profiling de rendimiento
+  profile_individual_behaviors: false    # Profiling individual por comportamiento
+  
+  # Simulación
+  simulation_mode: false           # Modo simulación (sin hardware real)
+  mock_sensor_data: false          # Usar datos simulados de sensores

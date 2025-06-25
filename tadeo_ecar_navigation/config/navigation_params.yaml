@@ -1,0 +1,236 @@
+# Parámetros de configuración para el sistema de navegación del Tadeo eCar
+# Configuración para los nodos de navegación, ejecución de misiones, gestión de waypoints y monitoreo
+
+# ===========================
+# NAVIGATION CONTROLLER NODE
+# ===========================
+navigation_controller_node:
+  ros__parameters:
+    # Frecuencia de control principal
+    control_frequency: 20.0  # Hz - Frecuencia del bucle de control
+    
+    # Tolerancias de navegación
+    goal_tolerance: 0.3      # metros - Tolerancia para considerar alcanzado el objetivo
+    angle_tolerance: 0.2     # radianes - Tolerancia angular para el objetivo
+    
+    # Límites de velocidad
+    max_linear_velocity: 1.5    # m/s - Velocidad lineal máxima
+    max_angular_velocity: 1.0   # rad/s - Velocidad angular máxima
+    emergency_deceleration: 3.0 # m/s² - Desaceleración de emergencia
+    
+    # Configuración de recuperación
+    recovery_timeout: 30.0           # segundos - Tiempo límite para comportamientos de recuperación
+    enable_recovery_behaviors: true  # Habilitar comportamientos de recuperación automática
+    
+    # Integración con Nav2
+    use_nav2_stack: true  # Usar el stack completo de Nav2 para navegación
+    
+    # Monitoreo de seguridad
+    enable_safety_monitoring: true  # Habilitar monitoreo continuo de seguridad
+    
+    # Marcos de referencia
+    base_frame: "base_link"  # Marco de referencia del robot
+    map_frame: "map"         # Marco de referencia del mapa
+
+# ===========================
+# MISSION EXECUTOR NODE
+# ===========================
+mission_executor_node:
+  ros__parameters:
+    # Frecuencia de ejecución
+    execution_frequency: 5.0  # Hz - Frecuencia del bucle de ejecución de misiones
+    
+    # Almacenamiento de misiones
+    mission_storage_path: "/tmp/tadeo_missions/"  # Directorio para archivos de misión
+    auto_load_missions: true                      # Cargar misiones automáticamente al inicio
+    
+    # Configuración de reintentos
+    max_mission_attempts: 3     # Número máximo de intentos por misión
+    retry_failed_waypoints: true # Reintentar waypoints fallidos
+    
+    # Timeouts
+    waypoint_timeout: 60.0   # segundos - Tiempo límite por waypoint
+    mission_timeout: 1800.0  # segundos - Tiempo límite total por misión (30 min)
+    
+    # Logging
+    enable_mission_logging: true  # Habilitar registro detallado de misiones
+    
+    # Marcos de referencia
+    base_frame: "base_link"
+    map_frame: "map"
+
+# ===========================
+# WAYPOINT MANAGER NODE
+# ===========================
+waypoint_manager_node:
+  ros__parameters:
+    # Frecuencia de actualización
+    update_frequency: 10.0  # Hz - Frecuencia de actualización del gestor
+    
+    # Almacenamiento de waypoints
+    waypoint_storage_path: "/tmp/tadeo_waypoints/"  # Directorio para waypoints
+    auto_save_interval: 30.0                        # segundos - Intervalo de auto-guardado
+    
+    # Límites de waypoints
+    max_waypoints_per_mission: 50    # Número máximo de waypoints por misión
+    default_waypoint_tolerance: 0.3  # metros - Tolerancia por defecto
+    default_max_velocity: 1.0        # m/s - Velocidad máxima por defecto en waypoints
+    
+    # Configuración de marcadores interactivos
+    enable_interactive_markers: true   # Habilitar marcadores interactivos en RViz
+    auto_connect_waypoints: true       # Conectar waypoints automáticamente con líneas
+    waypoint_height_offset: 0.2       # metros - Altura de visualización de waypoints
+    
+    # Marcos de referencia
+    base_frame: "base_link"
+    map_frame: "map"
+
+# ===========================
+# NAVIGATION MONITOR NODE
+# ===========================
+navigation_monitor_node:
+  ros__parameters:
+    # Frecuencia de monitoreo
+    monitor_frequency: 10.0  # Hz - Frecuencia del bucle de monitoreo
+    
+    # Umbrales de seguridad
+    safety_distance_threshold: 0.5     # metros - Distancia mínima segura a obstáculos
+    velocity_threshold: 0.1            # m/s - Umbral para detectar movimiento
+    angular_velocity_threshold: 0.05   # rad/s - Umbral para detectar rotación
+    goal_distance_threshold: 5.0       # metros - Distancia máxima aceptable al objetivo
+    
+    # Configuración de análisis
+    costmap_analysis_enabled: true     # Habilitar análisis del costmap
+    performance_logging_enabled: true  # Habilitar registro de rendimiento
+    safety_monitoring_enabled: true    # Habilitar monitoreo de seguridad
+    
+    # Logging de datos
+    data_logging_path: "/tmp/tadeo_navigation_logs/"  # Directorio para logs
+    
+    # Umbrales de alerta
+    alert_threshold_high: 0.8    # Umbral alto para calidad de navegación
+    alert_threshold_medium: 0.6  # Umbral medio para calidad de navegación
+    
+    # Marcos de referencia
+    base_frame: "base_link"
+    map_frame: "map"
+
+# ===========================
+# CONFIGURACIÓN GLOBAL
+# ===========================
+# Parámetros compartidos entre todos los nodos de navegación
+
+global_navigation:
+  # Configuración de transformadas
+  tf_timeout: 1.0  # segundos - Tiempo límite para búsqueda de transformadas
+  
+  # Configuración de costmap global
+  global_costmap:
+    resolution: 0.05          # metros/píxel - Resolución del mapa
+    width: 1000               # píxeles - Ancho del costmap
+    height: 1000              # píxeles - Alto del costmap
+    origin_x: -25.0           # metros - Origen X del mapa
+    origin_y: -25.0           # metros - Origen Y del mapa
+    update_frequency: 5.0     # Hz - Frecuencia de actualización
+    publish_frequency: 2.0    # Hz - Frecuencia de publicación
+    
+  # Configuración de costmap local
+  local_costmap:
+    resolution: 0.05          # metros/píxel
+    width: 200                # píxeles
+    height: 200               # píxeles
+    update_frequency: 10.0    # Hz
+    publish_frequency: 5.0    # Hz
+    
+  # Capas del costmap
+  costmap_layers:
+    - name: "static_layer"
+      enabled: true
+      weight: 1.0
+    - name: "obstacle_layer"
+      enabled: true
+      weight: 1.0
+    - name: "inflation_layer"
+      enabled: true
+      weight: 1.0
+      inflation_radius: 0.8   # metros
+      cost_scaling_factor: 10.0
+    - name: "voxel_layer"
+      enabled: false          # Deshabilitado por defecto
+      weight: 1.0
+  
+  # Planificador global
+  global_planner:
+    planner_plugin: "nav2_navfn_planner/NavfnPlanner"
+    tolerance: 0.5            # metros
+    use_astar: false          # Usar A* en lugar de Dijkstra
+    allow_unknown: true       # Permitir navegación en áreas desconocidas
+    
+  # Controlador local
+  local_controller:
+    controller_plugin: "dwb_core::DWBLocalPlanner"
+    max_vel_x: 1.5           # m/s
+    min_vel_x: -0.5          # m/s
+    max_vel_y: 0.0           # m/s (robot no holonómico)
+    min_vel_y: 0.0           # m/s
+    max_vel_theta: 1.0       # rad/s
+    min_vel_theta: -1.0      # rad/s
+    acc_lim_x: 1.0           # m/s²
+    acc_lim_y: 0.0           # m/s²
+    acc_lim_theta: 1.0       # rad/s²
+    
+    # Configuración DWB
+    sim_time: 2.0            # segundos - Tiempo de simulación
+    discretize_by_time: false
+    vx_samples: 20           # Muestras de velocidad X
+    vy_samples: 1            # Muestras de velocidad Y
+    vth_samples: 40          # Muestras de velocidad angular
+    
+    # Críticos de evaluación
+    critics:
+      - "RotateToGoal"
+      - "Oscillation"
+      - "BaseObstacle"
+      - "GoalAlign"
+      - "PathAlign"
+      - "PathDist"
+      - "GoalDist"
+    
+  # Comportamientos de recuperación
+  recovery_behaviors:
+    - name: "spin_recovery"
+      plugin: "nav2_recoveries/Spin"
+      enabled: true
+      max_rotational_vel: 0.5  # rad/s
+      min_rotational_vel: 0.1  # rad/s
+      
+    - name: "backup_recovery"
+      plugin: "nav2_recoveries/BackUp"
+      enabled: true
+      backup_dist: -0.3        # metros (negativo = hacia atrás)
+      backup_speed: 0.2        # m/s
+      
+    - name: "wait_recovery"
+      plugin: "nav2_recoveries/Wait"
+      enabled: true
+      wait_duration: 5.0       # segundos
+
+# ===========================
+# CONFIGURACIÓN DE SEGURIDAD
+# ===========================
+safety_configuration:
+  # Límites de velocidad de emergencia
+  emergency_linear_velocity: 0.1   # m/s
+  emergency_angular_velocity: 0.1  # rad/s
+  
+  # Distancias de seguridad
+  min_obstacle_distance: 0.3       # metros
+  critical_obstacle_distance: 0.1  # metros
+  
+  # Timeouts de seguridad
+  navigation_timeout: 300.0         # segundos
+  stuck_detection_timeout: 10.0     # segundos
+  
+  # Monitoreo de salud
+  health_check_frequency: 1.0       # Hz
+  component_timeout: 5.0            # segundos

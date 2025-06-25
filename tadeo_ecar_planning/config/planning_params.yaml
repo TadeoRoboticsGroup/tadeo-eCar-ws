@@ -1,0 +1,146 @@
+# Configuración del Sistema de Planificación de Rutas Tadeo eCar
+
+# Planificador Global de Rutas
+global_path_planner_node:
+  ros__parameters:
+    # Configuración general
+    planning_frequency: 2.0                    # Frecuencia de planificación (Hz)
+    planner_type: "RRTstar"                   # Tipo de planificador: "RRTstar", "PRM", "EST"
+    max_planning_time: 5.0                    # Tiempo máximo de planificación (s)
+    goal_tolerance: 0.2                       # Tolerancia de meta (m)
+    robot_radius: 0.3                         # Radio del robot (m)
+    safety_distance: 0.1                      # Distancia de seguridad adicional (m)
+    resolution: 0.05                          # Resolución de planificación (m)
+    max_velocity: 2.0                         # Velocidad máxima (m/s)
+    path_smoothing_enabled: true              # Activar suavizado de ruta
+    dynamic_replanning: true                  # Replanificación dinámica
+    replanning_distance_threshold: 1.0        # Umbral de distancia para replanificar (m)
+    
+    # Marcos de referencia
+    map_frame: "map"                          # Marco del mapa
+    base_frame: "base_link"                   # Marco base del robot
+    
+    # Parámetros específicos del planificador
+    rrt_star:
+      range: 1.0                             # Rango de conexión RRT*
+      goal_bias: 0.05                        # Sesgo hacia la meta
+      max_samples: 10000                     # Muestras máximas
+    
+    prm:
+      max_nearest_neighbors: 10               # Vecinos más cercanos máximos
+      connection_range: 2.0                   # Rango de conexión
+
+# Planificador Local de Rutas
+local_path_planner_node:
+  ros__parameters:
+    # Configuración general
+    planning_frequency: 20.0                  # Frecuencia de planificación local (Hz)
+    lookahead_distance: 2.0                   # Distancia de anticipación (m)
+    max_linear_velocity: 1.5                  # Velocidad lineal máxima (m/s)
+    max_angular_velocity: 1.0                 # Velocidad angular máxima (rad/s)
+    max_linear_acceleration: 1.0              # Aceleración lineal máxima (m/s²)
+    max_angular_acceleration: 2.0             # Aceleración angular máxima (rad/s²)
+    min_obstacle_distance: 0.5                # Distancia mínima a obstáculos (m)
+    prediction_horizon: 2.0                   # Horizonte de predicción (s)
+    
+    # Muestreo de trayectorias (DWA)
+    trajectory_samples: 20                    # Muestras de velocidad lineal
+    angular_samples: 11                       # Muestras de velocidad angular
+    
+    # Geometría del robot
+    robot_radius: 0.3                         # Radio del robot (m)
+    safety_margin: 0.1                        # Margen de seguridad (m)
+    goal_tolerance: 0.2                       # Tolerancia de meta (m)
+    
+    # Algoritmos
+    path_following_enabled: true              # Activar seguimiento de ruta
+    obstacle_avoidance_enabled: true          # Activar evitación de obstáculos
+    dynamic_window_approach: true             # Usar enfoque de ventana dinámica
+    
+    # Pesos de costo
+    obstacle_cost_weight: 1000.0              # Peso del costo de obstáculos
+    smoothness_cost_weight: 1.0               # Peso del costo de suavidad
+    goal_cost_weight: 100.0                   # Peso del costo de meta
+    velocity_cost_weight: 1.0                 # Peso del costo de velocidad
+    
+    # Marcos de referencia
+    base_frame: "base_link"                   # Marco base del robot
+    map_frame: "map"                          # Marco del mapa
+
+# Optimizador de Trayectorias
+trajectory_optimizer_node:
+  ros__parameters:
+    # Configuración general
+    optimization_frequency: 5.0               # Frecuencia de optimización (Hz)
+    max_velocity: 2.0                         # Velocidad máxima (m/s)
+    max_acceleration: 1.0                     # Aceleración máxima (m/s²)
+    max_deceleration: 2.0                     # Desaceleración máxima (m/s²)
+    max_jerk: 2.0                            # Jerk máximo (m/s³)
+    max_curvature: 2.0                        # Curvatura máxima (1/m)
+    
+    # Pesos de optimización
+    smoothing_weight: 1.0                     # Peso de suavizado
+    curvature_weight: 10.0                    # Peso de curvatura
+    velocity_weight: 1.0                      # Peso de velocidad
+    acceleration_weight: 5.0                  # Peso de aceleración
+    jerk_weight: 10.0                         # Peso de jerk
+    
+    # Algoritmos de optimización
+    enable_velocity_optimization: true        # Optimizar perfil de velocidad
+    enable_path_smoothing: true               # Suavizar ruta
+    enable_curvature_optimization: true       # Optimizar curvatura
+    
+    # Parámetros de convergencia
+    optimization_iterations: 100              # Iteraciones máximas
+    convergence_threshold: 1e-6               # Umbral de convergencia
+    
+    # Parámetros del vehículo
+    wheelbase: 0.3                           # Distancia entre ejes (m)
+    track_width: 0.25                        # Ancho de vía (m)
+    
+    # Marcos de referencia
+    base_frame: "base_link"                   # Marco base del robot
+    map_frame: "map"                          # Marco del mapa
+
+# Gestor de Rutas
+path_manager_node:
+  ros__parameters:
+    # Configuración general
+    management_frequency: 10.0                # Frecuencia de gestión (Hz)
+    goal_tolerance: 0.3                       # Tolerancia de meta (m)
+    path_timeout: 5.0                         # Tiempo de espera de ruta (s)
+    replanning_threshold: 1.0                 # Umbral de replanificación (m)
+    max_planning_attempts: 3                  # Intentos máximos de planificación
+    
+    # Monitoreo y seguimiento
+    enable_path_monitoring: true              # Activar monitoreo de ruta
+    enable_progress_tracking: true            # Activar seguimiento de progreso
+    enable_automatic_replanning: true         # Replanificación automática
+    path_deviation_threshold: 2.0             # Umbral de desviación de ruta (m)
+    
+    # Detección de bloqueo
+    stuck_detection_time: 10.0                # Tiempo para detectar bloqueo (s)
+    stuck_distance_threshold: 0.1             # Umbral de distancia para bloqueo (m)
+    
+    # Marcos de referencia
+    base_frame: "base_link"                   # Marco base del robot
+    map_frame: "map"                          # Marco del mapa
+
+# Monitor de Salud del Sistema de Planificación
+planning_health_monitor:
+  ros__parameters:
+    # Configuración de monitoreo
+    monitoring_frequency: 5.0                 # Frecuencia de monitoreo (Hz)
+    component_timeout: 3.0                    # Tiempo de espera de componentes (s)
+    
+    # Umbrales de rendimiento
+    planning_time_threshold: 2.0              # Umbral de tiempo de planificación (s)
+    path_quality_threshold: 0.8               # Umbral de calidad de ruta
+    cpu_usage_threshold: 80.0                 # Umbral de uso de CPU (%)
+    memory_usage_threshold: 90.0              # Umbral de uso de memoria (%)
+    
+    # Componentes monitoreados
+    monitor_global_planner: true              # Monitorear planificador global
+    monitor_local_planner: true               # Monitorear planificador local
+    monitor_trajectory_optimizer: true        # Monitorear optimizador
+    monitor_path_manager: true                # Monitorear gestor de rutas

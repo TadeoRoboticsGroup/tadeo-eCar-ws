@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<!--
+Árbol de comportamientos para exploración autónoma
+Implementa estrategias de exploración inteligente del entorno
+-->
+<root main_tree_to_execute="ExplorationMission">
+    
+    <BehaviorTree ID="ExplorationMission">
+        <Sequence name="ExplorationMainSequence">
+            
+            <!-- Verificaciones previas a exploración -->
+            <Fallback name="ExplorationPreChecks">
+                <Sequence name="ExplorationValidation">
+                    <CheckEmergency name="SafetyCheck" />
+                    <CheckBattery threshold="0.4" name="BatteryCheck" />
+                    <CheckSensorsHealthy name="SensorCheck" />
+                    <CheckMapAvailable name="MapCheck" />
+                </Sequence>
+                <Sequence name="ExplorationAbort">
+                    <SendAlert message="Exploration preconditions failed" level="HIGH" />
+                    <AlwaysFailure />
+                </Sequence>
+            </Fallback>
+            
+            <!-- Inicialización de exploración -->
+            <Sequence name="ExplorationInitialization">
+                <InitializeExplorationMap name="SetupMap" />
+                <SetExplorationParameters name="ConfigureExploration" />
+                <SetRobotState state="EXPLORING" />
+                <SendAlert message="Starting exploration mission" level="INFO" />
+            </Sequence>
+            
+            <!-- Loop principal de exploración -->
+            <Repeat num_cycles="-1" name="ExplorationMainLoop">
+                <Fallback name="ExplorationStep">
+                    
+                    <!-- Continuar exploración -->
+                    <Sequence name="ContinueExploration">
+                        <!-- Verificaciones durante exploración -->
+                        <CheckEmergency name="EmergencyDuringExploration" />
+                        <CheckBattery threshold="0.3" name="BatteryDuringExploration" />
+                        <CheckExplorationActive name="ExplorationStillActive" />
+                        
+                        <!-- Estrategia de exploración -->
+                        <Fallback name="ExplorationStrategy">
+                            
+                            <!-- Estrategia 1: Exploración fronteriza -->
+                            <Sequence name="FrontierExploration">
+                                <FindFrontiers name="DetectFrontiers" />
+                                <SelectBestFrontier name="ChooseFrontier" criteria="distance_and_gain" />
+                                <NavigateToFrontier name="GoToFrontier" />
+                                <ExploreFrontierArea name="ScanFrontier" />
+                            </Sequence>
+                            
+                            <!-- Estrategia 2: Exploración de áreas desconocidas -->
+                            <Sequence name="UnknownAreaExploration">
+                                <FindUnknownAreas name="DetectUnknownRegions" />
+                                <SelectUnknownArea name="ChooseUnknownArea" />
+                                <NavigateToUnknownArea name="GoToUnknown" />
+                                <ExploreUnknownArea name="ScanUnknown" />
+                            </Sequence>
+                            
+                            <!-- Estrategia 3: Exploración sistemática -->
+                            <Sequence name="SystematicExploration">
+                                <GenerateSystematicPlan name="CreateSystematicPlan" />
+                                <ExecuteSystematicPlan name="FollowPlan" />
+                            </Sequence>
+                            
+                            <!-- Estrategia 4: Exploración aleatoria -->
+                            <Sequence name="RandomExploration">
+                                <GenerateRandomTarget name="CreateRandomGoal" />
+                                <NavigateToGoal name="GoToRandomTarget" />
+                                <ExploreCurrentArea name="ScanCurrentArea" />
+                            </Sequence>
+                            
+                        </Fallback>
+                        
+                        <!-- Actualizar mapa y progreso -->
+                        <Sequence name="UpdateProgress">
+                            <UpdateExplorationMap name="RefreshMap" />
+                            <CalculateExplorationProgress name="CheckProgress" />
+                            <LogExplorationData name="RecordData" />
+                        </Sequence>
+                        
+                        <!-- Verificar si exploración está completa -->
+                        <Fallback name="CheckCompletion">
+                            <CheckExplorationComplete name="IsExplorationDone" threshold="0.95" />
+                            <AlwaysSuccess name="ContinueExploring" />
+                        </Fallback>
+                        
+                    </Sequence>
+                    
+                    <!-- Finalizar exploración -->
+                    <Sequence name="FinishExploration">
+                        <SendAlert message="Exploration completed or stopped" level="INFO" />
+                        <SaveExplorationResults name="SaveResults" />
+                        <SetRobotState state="IDLE" />
+                        <AlwaysSuccess />
+                    </Sequence>
+                    
+                </Fallback>
+            </Repeat>
+            
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para navegación segura durante exploración -->
+    <BehaviorTree ID="SafeExplorationNavigation">
+        <Sequence name="SafeNavigationSequence">
+            
+            <!-- Planificación segura -->
+            <Sequence name="SafePlanning">
+                <CheckPathSafety name="ValidatePath" />
+                <PlanSafePath name="CreateSafePath" />
+            </Sequence>
+            
+            <!-- Navegación con monitoreo -->
+            <Parallel success_threshold="1" failure_threshold="2" name="MonitoredNavigation">
+                <NavigateToGoal name="ExecuteNavigation" />
+                <MonitorObstacles name="ObstacleWatch" />
+                <MonitorBattery name="BatteryWatch" />
+            </Parallel>
+            
+            <!-- Verificación post-navegación -->
+            <Sequence name="PostNavigationCheck">
+                <VerifyGoalReached name="ConfirmArrival" />
+                <CheckRobotSafety name="SafetyVerification" />
+            </Sequence>
+            
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para análisis de fronteras -->
+    <BehaviorTree ID="FrontierAnalysis">
+        <Sequence name="FrontierAnalysisSequence">
+            
+            <!-- Detección de fronteras -->
+            <Sequence name="FrontierDetection">
+                <AnalyzeOccupancyGrid name="ProcessGrid" />
+                <IdentifyFrontierCells name="FindFrontiers" />
+                <ClusterFrontiers name="GroupFrontiers" />
+            </Sequence>
+            
+            <!-- Evaluación de fronteras -->
+            <Sequence name="FrontierEvaluation">
+                <CalculateFrontierGain name="EstimateInformationGain" />
+                <CalculateFrontierCost name="EstimateNavigationCost" />
+                <RankFrontiers name="PrioritizeFrontiers" />
+            </Sequence>
+            
+            <!-- Selección de frontera óptima -->
+            <Sequence name="FrontierSelection">
+                <FilterViableFrontiers name="FilterFrontiers" />
+                <SelectOptimalFrontier name="ChooseBest" />
+                <ValidateFrontierSelection name="ConfirmSelection" />
+            </Sequence>
+            
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para recovery específico de exploración -->
+    <BehaviorTree ID="ExplorationRecovery">
+        <Fallback name="ExplorationRecoveryStrategies">
+            
+            <!-- Estrategia 1: Cambiar objetivo de exploración -->
+            <Sequence name="ChangeTarget">
+                <SendAlert message="Changing exploration target" level="INFO" />
+                <FindAlternativeFrontier name="FindNewTarget" />
+                <NavigateToGoal name="GoToNewTarget" />
+            </Sequence>
+            
+            <!-- Estrategia 2: Volver a área conocida -->
+            <Sequence name="ReturnToKnown">
+                <SendAlert message="Returning to known area" level="MEDIUM" />
+                <FindNearestKnownArea name="FindSafeArea" />
+                <NavigateToGoal name="GoToSafeArea" />
+                <ReplanExploration name="ReplanFromSafeArea" />
+            </Sequence>
+            
+            <!-- Estrategia 3: Recovery básico -->
+            <Sequence name="BasicRecovery">
+                <SendAlert message="Executing basic recovery" level="MEDIUM" />
+                <ClearCostmaps name="RefreshMaps" />
+                <RotateRecovery name="Rotate360" />
+                <BackupRecovery name="BackupMove" distance="0.3" />
+            </Sequence>
+            
+            <!-- Estrategia 4: Abortar exploración -->
+            <Sequence name="AbortExploration">
+                <SendAlert message="Aborting exploration due to failures" level="HIGH" />
+                <SavePartialResults name="SaveProgress" />
+                <SetRobotState state="IDLE" />
+                <AlwaysFailure />
+            </Sequence>
+            
+        </Fallback>
+    </BehaviorTree>
+    
+</root>

@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!--
+Árbol de comportamientos específico para patrullaje
+Implementa lógica de patrullaje autónomo con puntos de control
+-->
+<root main_tree_to_execute="PatrolMission">
+    
+    <BehaviorTree ID="PatrolMission">
+        <Sequence name="PatrolMainSequence">
+            
+            <!-- Verificaciones iniciales -->
+            <Fallback name="PatrolPreChecks">
+                <Sequence name="PatrolValidation">
+                    <CheckEmergency name="SafetyCheck" />
+                    <CheckBattery threshold="0.3" name="BatteryCheck" />
+                    <CheckPatrolRoute name="RouteValidation" />
+                </Sequence>
+                <Sequence name="PatrolAbort">
+                    <SendAlert message="Patrol preconditions failed" level="HIGH" />
+                    <AlwaysFailure />
+                </Sequence>
+            </Fallback>
+            
+            <!-- Inicialización del patrullaje -->
+            <Sequence name="PatrolInitialization">
+                <LoadPatrolRoute name="LoadRoute" route_id="default_patrol" />
+                <SetRobotState state="PATROLLING" />
+                <SendAlert message="Starting patrol mission" level="INFO" />
+            </Sequence>
+            
+            <!-- Loop principal de patrullaje -->
+            <Repeat num_cycles="-1" name="PatrolMainLoop">
+                <Fallback name="PatrolStep">
+                    
+                    <!-- Verificaciones durante patrullaje -->
+                    <Sequence name="PatrolContinue">
+                        <CheckEmergency name="EmergencyDuringPatrol" />
+                        <CheckBattery threshold="0.25" name="BatteryDuringPatrol" />
+                        <CheckPatrolActive name="PatrolStillActive" />
+                        
+                        <!-- Ejecutar siguiente punto de patrullaje -->
+                        <Sequence name="ExecutePatrolPoint">
+                            <GetNextPatrolPoint name="GetNextPoint" />
+                            <Fallback name="NavigateToPatrolPoint">
+                                <NavigateToGoal name="GoToPoint" timeout="120.0" />
+                                <Sequence name="NavigationFailed">
+                                    <SendAlert message="Failed to reach patrol point" level="MEDIUM" />
+                                    <RecoveryBehavior name="PatrolRecovery" reason="navigation_failed" />
+                                </Sequence>
+                            </Fallback>
+                            
+                            <!-- Acciones en el punto de patrullaje -->
+                            <Sequence name="PatrolPointActions">
+                                <ExecutePatrolScan name="ScanArea" duration="5.0" />
+                                <CheckForAnomalies name="DetectAnomalies" />
+                                <UpdatePatrolLog name="LogPatrolData" />
+                                <Wait duration="2.0" name="PatrolPause" />
+                            </Sequence>
+                        </Sequence>
+                    </Sequence>
+                    
+                    <!-- Manejar condiciones de parada -->
+                    <Sequence name="PatrolStop">
+                        <SendAlert message="Patrol stopped due to conditions" level="INFO" />
+                        <SetRobotState state="IDLE" />
+                        <AlwaysSuccess />
+                    </Sequence>
+                    
+                </Fallback>
+            </Repeat>
+            
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para recovery específico de patrullaje -->
+    <BehaviorTree ID="PatrolRecovery">
+        <Fallback name="PatrolRecoveryStrategies">
+            
+            <!-- Estrategia 1: Reintentar punto actual -->
+            <Sequence name="RetryCurrentPoint">
+                <CheckRetryCount max_retries="2" name="CheckRetries" />
+                <SendAlert message="Retrying current patrol point" level="INFO" />
+                <Wait duration="5.0" />
+                <ClearCostmaps name="RefreshMaps" />
+                <NavigateToGoal name="RetryNavigation" />
+            </Sequence>
+            
+            <!-- Estrategia 2: Saltar al siguiente punto -->
+            <Sequence name="SkipToNextPoint">
+                <SendAlert message="Skipping current patrol point" level="MEDIUM" />
+                <MarkPatrolPointFailed name="LogFailedPoint" />
+                <GetNextPatrolPoint name="AdvanceToNext" />
+                <NavigateToGoal name="GoToNextPoint" />
+            </Sequence>
+            
+            <!-- Estrategia 3: Volver al punto anterior -->
+            <Sequence name="ReturnToPrevious">
+                <SendAlert message="Returning to previous patrol point" level="MEDIUM" />
+                <GetPreviousPatrolPoint name="GetPreviousPoint" />
+                <NavigateToGoal name="GoToPrevious" />
+            </Sequence>
+            
+            <!-- Estrategia 4: Abortar patrullaje -->
+            <Sequence name="AbortPatrol">
+                <SendAlert message="Aborting patrol due to multiple failures" level="HIGH" />
+                <SetRobotState state="IDLE" />
+                <AlwaysFailure />
+            </Sequence>
+            
+        </Fallback>
+    </BehaviorTree>
+    
+    <!-- Subárbol para acciones específicas de patrullaje -->
+    <BehaviorTree ID="PatrolActions">
+        <Sequence name="PatrolActionSequence">
+            
+            <!-- Escaneo del área -->
+            <Parallel success_threshold="1" failure_threshold="3" name="PatrolScan">
+                <ExecuteLaserScan name="LaserScan" duration="3.0" />
+                <ExecuteCameraScan name="CameraScan" duration="3.0" />
+                <CheckForIntruders name="IntruderDetection" />
+            </Parallel>
+            
+            <!-- Análisis de datos -->
+            <Sequence name="DataAnalysis">
+                <AnalyzeSensorData name="ProcessScanData" />
+                <DetectChanges name="ChangeDetection" />
+                <UpdatePatrolDatabase name="StoreData" />
+            </Sequence>
+            
+            <!-- Reportar resultados -->
+            <Sequence name="ReportResults">
+                <GeneratePatrolReport name="CreateReport" />
+                <SendPatrolUpdate name="TransmitUpdate" />
+            </Sequence>
+            
+        </Sequence>
+    </BehaviorTree>
+    
+</root>

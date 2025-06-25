@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<!--
+Árbol principal de comportamientos para el robot Tadeo eCar
+Este árbol implementa la lógica de toma de decisiones de alto nivel
+-->
+<root main_tree_to_execute="MainBehavior">
+    
+    <!-- Definición del árbol principal -->
+    <BehaviorTree ID="MainBehavior">
+        <Sequence name="MainSequence">
+            
+            <!-- 1. Verificaciones de seguridad críticas -->
+            <Fallback name="SafetyChecks">
+                <CheckEmergency name="EmergencyCheck" />
+                <Sequence name="EmergencyResponse">
+                    <SendAlert message="Emergency detected!" level="CRITICAL" />
+                    <Wait duration="1.0" />
+                    <AlwaysFailure />
+                </Sequence>
+            </Fallback>
+            
+            <!-- 2. Gestión de batería -->
+            <Fallback name="BatteryManagement">
+                <CheckBattery threshold="0.15" name="CriticalBatteryCheck" />
+                <Sequence name="LowBatteryProtocol">
+                    <SendAlert message="Critical battery level - initiating docking" level="HIGH" />
+                    <DockToStation name="EmergencyDocking" />
+                </Sequence>
+            </Fallback>
+            
+            <!-- 3. Lógica principal de comportamientos -->
+            <Fallback name="MainBehaviorLogic">
+                
+                <!-- Prioridad 1: Misiones activas -->
+                <Sequence name="MissionExecution">
+                    <CheckActiveMission name="HasActiveMission" />
+                    <Fallback name="MissionLogic">
+                        <ExecuteMission name="ContinueMission" />
+                        <RecoveryBehavior name="MissionRecovery" reason="mission_failed" />
+                    </Fallback>
+                </Sequence>
+                
+                <!-- Prioridad 2: Navegación a objetivo -->
+                <Sequence name="NavigationMode">
+                    <CheckNavigationGoal name="HasNavigationGoal" />
+                    <Fallback name="NavigationLogic">
+                        <NavigateToGoal name="ExecuteNavigation" />
+                        <RecoveryBehavior name="NavigationRecovery" reason="navigation_failed" />
+                    </Fallback>
+                </Sequence>
+                
+                <!-- Prioridad 3: Patrullaje automático -->
+                <Sequence name="PatrolMode">
+                    <CheckPatrolMode name="IsPatrolEnabled" />
+                    <Fallback name="PatrolLogic">
+                        <ExecutePatrol name="ContinuePatrol" />
+                        <RecoveryBehavior name="PatrolRecovery" reason="patrol_failed" />
+                    </Fallback>
+                </Sequence>
+                
+                <!-- Prioridad 4: Exploración -->
+                <Sequence name="ExplorationMode">
+                    <CheckExplorationMode name="IsExplorationEnabled" />
+                    <Fallback name="ExplorationLogic">
+                        <ExploreArea name="ContinueExploration" />
+                        <RecoveryBehavior name="ExplorationRecovery" reason="exploration_failed" />
+                    </Fallback>
+                </Sequence>
+                
+                <!-- Comportamiento por defecto: Idle -->
+                <Sequence name="IdleBehavior">
+                    <SetRobotState state="IDLE" />
+                    <Wait duration="2.0" />
+                    <AlwaysSuccess />
+                </Sequence>
+                
+            </Fallback>
+            
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para gestión de misiones -->
+    <BehaviorTree ID="MissionManagement">
+        <Sequence name="MissionSequence">
+            <CheckMissionValid name="ValidateMission" />
+            <Fallback name="MissionExecution">
+                <Sequence name="ExecuteMissionSteps">
+                    <LoadMissionWaypoints name="LoadWaypoints" />
+                    <Repeat num_cycles="-1" name="MissionLoop">
+                        <Sequence name="WaypointSequence">
+                            <GetNextWaypoint name="GetWaypoint" />
+                            <NavigateToWaypoint name="GoToWaypoint" />
+                            <ExecuteWaypointActions name="WaypointActions" />
+                        </Sequence>
+                    </Repeat>
+                </Sequence>
+                <Sequence name="MissionFailedHandling">
+                    <SendAlert message="Mission execution failed" level="HIGH" />
+                    <RecoveryBehavior reason="mission_execution_failed" />
+                </Sequence>
+            </Fallback>
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para comportamientos de recovery -->
+    <BehaviorTree ID="RecoveryBehaviors">
+        <Fallback name="RecoveryStrategies">
+            
+            <!-- Estrategia 1: Recovery simple -->
+            <Sequence name="SimpleRecovery">
+                <CheckRecoveryAttempts max_attempts="3" />
+                <Fallback name="SimpleRecoveryActions">
+                    <ClearCostmaps name="ClearMaps" />
+                    <RotateRecovery name="Rotate360" />
+                    <BackupRecovery name="BackupMove" distance="0.5" />
+                </Fallback>
+            </Sequence>
+            
+            <!-- Estrategia 2: Recovery avanzado -->
+            <Sequence name="AdvancedRecovery">
+                <CheckRecoveryAttempts max_attempts="5" />
+                <Fallback name="AdvancedRecoveryActions">
+                    <ReplanPath name="ReplanGlobal" />
+                    <EscapeRecovery name="EscapeObstacle" />
+                    <AlternatePathRecovery name="FindAlternatePath" />
+                </Fallback>
+            </Sequence>
+            
+            <!-- Estrategia 3: Recovery de emergencia -->
+            <Sequence name="EmergencyRecovery">
+                <SendAlert message="Initiating emergency recovery" level="CRITICAL" />
+                <StopRobot name="EmergencyStop" />
+                <RequestHumanAssistance name="CallForHelp" />
+            </Sequence>
+            
+        </Fallback>
+    </BehaviorTree>
+    
+    <!-- Subárbol para patrullaje -->
+    <BehaviorTree ID="PatrolBehavior">
+        <Sequence name="PatrolSequence">
+            <LoadPatrolRoute name="LoadRoute" />
+            <Repeat num_cycles="-1" name="PatrolLoop">
+                <Sequence name="PatrolStep">
+                    <GetNextPatrolPoint name="GetPatrolPoint" />
+                    <NavigateToGoal name="GoToPatrolPoint" />
+                    <ExecutePatrolActions name="PatrolActions" />
+                    <CheckPatrolConditions name="VerifyPatrol" />
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para exploración -->
+    <BehaviorTree ID="ExplorationBehavior">
+        <Sequence name="ExplorationSequence">
+            <InitializeExploration name="SetupExploration" />
+            <Repeat num_cycles="-1" name="ExplorationLoop">
+                <Sequence name="ExplorationStep">
+                    <SelectExplorationTarget name="ChooseTarget" />
+                    <NavigateToGoal name="GoToTarget" />
+                    <ScanEnvironment name="SensorScan" />
+                    <UpdateMap name="UpdateExplorationMap" />
+                    <CheckExplorationComplete name="VerifyProgress" />
+                </Sequence>
+            </Repeat>
+        </Sequence>
+    </BehaviorTree>
+    
+    <!-- Subárbol para carga de batería -->
+    <BehaviorTree ID="ChargingBehavior">
+        <Sequence name="ChargingSequence">
+            <FindChargingStation name="LocateCharger" />
+            <NavigateToGoal name="GoToCharger" />
+            <DockToStation name="InitiateDocking" />
+            <MonitorCharging name="WatchCharging" />
+            <UndockFromStation name="CompleteDocking" />
+        </Sequence>
+    </BehaviorTree>
+    
+</root>
