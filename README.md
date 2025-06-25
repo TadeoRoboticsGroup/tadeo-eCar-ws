@@ -636,7 +636,7 @@ ing.marioalvarezvallejo@gmail.com
 **Semillero de Robótica**
 
 ### 👨‍💻 **Desarrollador Principal**
-- **Nombre**: Mario Álvarez Vallejo
+- **Nombre**: Semillero Robótica
 - **Email**: ing.marioalvarezvallejo@gmail.com
 - **Especialidad**: Robótica Móvil y Sistemas Autónomos
 
