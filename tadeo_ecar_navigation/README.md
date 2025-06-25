@@ -519,8 +519,23 @@ costmap_analysis_enabled: true
 
 ## Licencia y Créditos
 
-Desarrollado como parte del proyecto Tadeo eCar para investigación en robótica móvil autónoma. Sistema optimizado para robots 4WD4WS con capacidades de navegación en interiores y exteriores.
+**Repositorio Privado - Semillero de Robótica**
+
+Copyright (c) 2024 Semillero de Robótica. Todos los derechos reservados.
+
+Desarrollado como parte del proyecto eCar para investigación en robótica móvil autónoma. Sistema optimizado para robots 4WD4WS con capacidades de navegación en interiores y exteriores.
+
+### 🌐 **Enlaces del Proyecto**
+- **Organización**: [TadeoRoboticsGroup](http://github.com/TadeoRoboticsGroup)
+- **Repositorio**: [tadeo-eCar-ws](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws)
+- **Sitio Web**: [Semillero de Robótica](https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/)
 
 ## Contacto y Soporte
 
-Para problemas técnicos, mejoras o contribuciones al sistema de navegación, consultar la documentación técnica completa del proyecto Tadeo eCar.
+### 📞 **Soporte Técnico**
+- **Email**: ing.marioalvarezvallejo@gmail.com
+- **GitHub**: [TadeoRoboticsGroup](http://github.com/TadeoRoboticsGroup)
+- **Issues**: [Reportar Problemas](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws/issues)
+- **Sitio Web**: [Semillero de Robótica](https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/)
+
+Para problemas técnicos, mejoras o contribuciones al sistema de navegación, usar el sistema de issues del repositorio.

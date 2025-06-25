@@ -1,0 +1,262 @@
+# Parámetros globales del sistema eCar 4WD4WS
+# Desarrollado por el Semillero de Robótica
+# https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/
+
+# Configuración global del robot
+robot_description:
+  robot_name: "tadeo_ecar"
+  robot_type: "4WD4WS"
+  version: "1.0.0"
+  
+  # Dimensiones físicas
+  dimensions:
+    length: 1.5      # metros
+    width: 0.8       # metros
+    height: 0.6      # metros
+    weight: 50.0     # kg
+    
+  # Capacidades
+  capabilities:
+    max_payload: 10.0        # kg
+    battery_capacity: 10000  # mAh
+    operating_time: 4.0      # horas
+
+# Configuración de Frames TF
+tf_configuration:
+  base_frame: "base_link"
+  odom_frame: "odom"
+  map_frame: "map"
+  
+  # Frames de sensores
+  sensor_frames:
+    laser_frame: "laser_frame"
+    camera_frame: "camera_frame"
+    imu_frame: "imu_frame"
+  
+  # Transformaciones estáticas (x, y, z, roll, pitch, yaw)
+  static_transforms:
+    base_link_to_laser: [0.3, 0.0, 0.2, 0.0, 0.0, 0.0]
+    base_link_to_camera: [0.4, 0.0, 0.3, 0.0, 0.0, 0.0]
+    base_link_to_imu: [0.0, 0.0, 0.1, 0.0, 0.0, 0.0]
+
+# Configuración de Topics
+topic_configuration:
+  # Topics de entrada
+  input_topics:
+    cmd_vel: "/cmd_vel"
+    goal_pose: "/goal_pose"
+    initial_pose: "/initialpose"
+    
+  # Topics de sensores
+  sensor_topics:
+    laser_scan: "/scan"
+    camera_image: "/camera/image_raw"
+    camera_info: "/camera/camera_info"
+    imu_data: "/imu/data"
+    
+  # Topics de odometría
+  odometry_topics:
+    wheel_odom: "/odom"
+    visual_odom: "/visual_odom"
+    
+  # Topics de estado
+  status_topics:
+    robot_state: "/robot_state"
+    system_health: "/system_health"
+    battery_state: "/battery_state"
+    emergency_stop: "/emergency_stop"
+
+# Configuración de QoS
+qos_configuration:
+  # Perfiles de QoS por categoría
+  sensor_data:
+    reliability: "best_effort"
+    durability: "volatile"
+    history: "keep_last"
+    depth: 10
+    
+  control_commands:
+    reliability: "reliable"
+    durability: "volatile"
+    history: "keep_last"
+    depth: 1
+    
+  system_status:
+    reliability: "reliable"
+    durability: "transient_local"
+    history: "keep_last"
+    depth: 1
+    
+  navigation_data:
+    reliability: "reliable"
+    durability: "volatile"
+    history: "keep_last"
+    depth: 50
+
+# Configuración de Lifecycle Managers
+lifecycle_configuration:
+  # Manager de navegación
+  navigation_lifecycle_manager:
+    node_names: [
+      "map_server",
+      "amcl",
+      "global_costmap",
+      "local_costmap", 
+      "planner_server",
+      "controller_server",
+      "recoveries_server",
+      "bt_navigator"
+    ]
+    autostart: true
+    bond_timeout: 4.0
+    
+  # Manager de localización
+  localization_lifecycle_manager:
+    node_names: [
+      "map_server",
+      "amcl"
+    ]
+    autostart: true
+    bond_timeout: 4.0
+    
+  # Manager de SLAM
+  slam_lifecycle_manager:
+    node_names: [
+      "slam_toolbox"
+    ]
+    autostart: true
+    bond_timeout: 4.0
+
+# Configuración de Seguridad
+safety_configuration:
+  # Límites de velocidad de seguridad
+  safety_limits:
+    max_linear_velocity: 1.5   # m/s
+    max_angular_velocity: 1.0  # rad/s
+    
+  # Zonas de seguridad
+  safety_zones:
+    emergency_stop_distance: 0.3    # metros
+    slow_down_distance: 1.0         # metros
+    warning_distance: 2.0           # metros
+    
+  # Timeouts de seguridad
+  safety_timeouts:
+    cmd_vel_timeout: 0.5       # segundos
+    sensor_timeout: 2.0        # segundos
+    navigation_timeout: 30.0   # segundos
+
+# Configuración de Monitoreo
+monitoring_configuration:
+  # Frecuencias de monitoreo
+  monitoring_frequencies:
+    system_health: 2.0         # Hz
+    battery_monitor: 1.0       # Hz
+    temperature_monitor: 0.5   # Hz
+    performance_monitor: 1.0   # Hz
+    
+  # Umbrales de alerta
+  alert_thresholds:
+    cpu_usage: 80.0           # porcentaje
+    memory_usage: 85.0        # porcentaje
+    disk_usage: 90.0          # porcentaje
+    temperature: 70.0         # °C
+    
+  # Configuración de logs
+  logging:
+    log_level: "INFO"
+    log_to_file: true
+    log_directory: "/tmp/tadeo_ecar_logs"
+    max_log_size: 100         # MB
+    max_log_files: 10
+
+# Configuración de Diagnósticos
+diagnostic_configuration:
+  # Agregador de diagnósticos
+  diagnostic_aggregator:
+    base_path: "tadeo_ecar"
+    pub_rate: 1.0
+    
+    # Analizadores de diagnósticos
+    analyzers:
+      sensors:
+        type: "diagnostic_aggregator/GenericAnalyzer"
+        path: "Sensors"
+        contains: ["laser", "camera", "imu"]
+        
+      motors:
+        type: "diagnostic_aggregator/GenericAnalyzer" 
+        path: "Motors"
+        contains: ["motor", "wheel", "steering"]
+        
+      navigation:
+        type: "diagnostic_aggregator/GenericAnalyzer"
+        path: "Navigation"
+        contains: ["nav", "amcl", "planner"]
+        
+      safety:
+        type: "diagnostic_aggregator/GenericAnalyzer"
+        path: "Safety"
+        contains: ["emergency", "collision", "watchdog"]
+
+# Configuración de Comportamientos
+behavior_configuration:
+  # Estados por defecto
+  default_behavior: "idle"
+  startup_behavior: "initialization"
+  
+  # Timeouts de comportamientos
+  behavior_timeouts:
+    navigation: 120.0     # segundos
+    exploration: 300.0    # segundos
+    patrol: 600.0        # segundos
+    docking: 60.0        # segundos
+    
+  # Prioridades de comportamientos (mayor número = mayor prioridad)
+  behavior_priorities:
+    emergency: 100
+    charging: 90
+    safety: 80
+    mission: 70
+    navigation: 60
+    patrol: 50
+    exploration: 40
+    idle: 10
+
+# Configuración de Red
+network_configuration:
+  # Configuración de Foxglove Bridge
+  foxglove_bridge:
+    port: 8765
+    address: "0.0.0.0"
+    max_update_rate: 30.0    # Hz
+    
+  # Configuración de ROS2 DDS
+  dds_configuration:
+    participant_id: 0
+    domain_id: 0
+    
+  # Configuración de tópicos remotos
+  remote_topics:
+    enable_remote_control: true
+    remote_cmd_vel_topic: "/remote/cmd_vel"
+    remote_goal_topic: "/remote/goal_pose"
+
+# Configuración de Desarrollo
+development_configuration:
+  # Modo debug
+  debug_mode: false
+  verbose_logging: false
+  
+  # Herramientas de desarrollo
+  development_tools:
+    enable_groot: false
+    groot_port: 1666
+    enable_rqt: false
+    enable_plotjuggler: false
+    
+  # Testing
+  testing:
+    enable_dummy_sensors: false
+    simulation_mode: false
+    mock_hardware: false

@@ -1,0 +1,217 @@
+# Parámetros de configuración para hardware del Tadeo eCar 4WD4WS
+
+# Configuración de Motores
+motor_driver_node:
+  ros__parameters:
+    # Parámetros de comunicación
+    serial_port: "/dev/ttyUSB0"
+    baud_rate: 115200
+    timeout_ms: 100
+    
+    # Configuración 4WD4WS
+    num_wheels: 4
+    wheel_base: 1.2      # metros - distancia entre ejes
+    track_width: 0.8     # metros - ancho de vía
+    wheel_radius: 0.15   # metros - radio de rueda
+    
+    # Límites de velocidad
+    max_linear_velocity: 2.0    # m/s
+    max_angular_velocity: 1.57  # rad/s (90 grados/s)
+    max_steering_angle: 0.785   # rad (45 grados)
+    
+    # Límites de aceleración
+    max_linear_acceleration: 1.0   # m/s²
+    max_angular_acceleration: 1.0  # rad/s²
+    max_steering_rate: 0.5         # rad/s
+    
+    # PID para control de velocidad
+    velocity_pid_kp: 1.0
+    velocity_pid_ki: 0.1
+    velocity_pid_kd: 0.05
+    
+    # PID para control de dirección
+    steering_pid_kp: 2.0
+    steering_pid_ki: 0.2
+    steering_pid_kd: 0.1
+
+# Configuración de Encoders
+encoder_driver_node:
+  ros__parameters:
+    # Configuración de encoders de rueda
+    encoder_resolution: 1024    # pulsos por revolución
+    gear_ratio: 20.0           # relación de engranajes
+    publish_frequency: 50.0    # Hz
+    
+    # Filtrado de ruido
+    enable_filtering: true
+    filter_window_size: 5
+    
+    # Calibración
+    calibration_distance: 1.0  # metros para calibración
+    auto_calibrate: true
+
+# Configuración de LiDAR
+lidar_driver_node:
+  ros__parameters:
+    # Configuración del dispositivo
+    device_name: "/dev/ttyUSB1"
+    baud_rate: 230400
+    frame_id: "laser_frame"
+    
+    # Parámetros de escaneo
+    angle_min: -3.14159    # -180 grados
+    angle_max: 3.14159     # +180 grados
+    range_min: 0.12        # metros
+    range_max: 12.0        # metros
+    scan_frequency: 10.0   # Hz
+    
+    # Filtrado
+    enable_filtering: true
+    intensity_threshold: 10.0
+
+# Configuración de Cámara
+camera_driver_node:
+  ros__parameters:
+    # Configuración del dispositivo
+    device_path: "/dev/video0"
+    frame_id: "camera_frame"
+    
+    # Resolución y formato
+    image_width: 640
+    image_height: 480
+    pixel_format: "YUYV"
+    fps: 30
+    
+    # Calibración de cámara
+    camera_matrix: [525.0, 0.0, 320.0, 0.0, 525.0, 240.0, 0.0, 0.0, 1.0]
+    distortion_coefficients: [0.1, -0.2, 0.0, 0.0, 0.0]
+    
+    # Procesamiento
+    auto_exposure: true
+    auto_white_balance: true
+
+# Configuración de IMU
+imu_driver_node:
+  ros__parameters:
+    # Configuración del dispositivo
+    device_path: "/dev/ttyACM0"
+    baud_rate: 57600
+    frame_id: "imu_frame"
+    
+    # Frecuencia de publicación
+    publish_frequency: 100.0   # Hz
+    
+    # Calibración
+    gyro_bias_x: 0.0
+    gyro_bias_y: 0.0
+    gyro_bias_z: 0.0
+    accel_bias_x: 0.0
+    accel_bias_y: 0.0
+    accel_bias_z: 9.81
+    
+    # Varianzas para sensores
+    angular_velocity_covariance: 0.02
+    linear_acceleration_covariance: 0.04
+    
+    # Filtrado
+    enable_filtering: true
+    filter_alpha: 0.8
+
+# Monitor de Batería
+battery_monitor_node:
+  ros__parameters:
+    # Configuración de batería
+    battery_capacity: 10000.0  # mAh
+    nominal_voltage: 24.0      # V
+    
+    # Umbrales de alerta
+    critical_voltage: 20.0     # V
+    low_voltage: 22.0          # V
+    
+    # Monitoreo
+    monitor_frequency: 1.0     # Hz
+    voltage_pin: "A0"          # Pin analógico para lectura
+    current_pin: "A1"          # Pin analógico para corriente
+    
+    # Calibración
+    voltage_divider_ratio: 11.0
+    current_sensor_sensitivity: 0.066  # V/A
+
+# Monitor de Temperatura
+temperature_monitor_node:
+  ros__parameters:
+    # Sensores de temperatura
+    cpu_temp_path: "/sys/class/thermal/thermal_zone0/temp"
+    motor_temp_pins: ["A2", "A3", "A4", "A5"]
+    
+    # Umbrales
+    critical_temperature: 85.0  # °C
+    warning_temperature: 70.0   # °C
+    
+    # Monitoreo
+    monitor_frequency: 2.0      # Hz
+
+# Monitor de Voltajes
+voltage_monitor_node:
+  ros__parameters:
+    # Canales de voltaje a monitorear
+    voltage_channels:
+      main_power: "A6"
+      motor_power: "A7"
+      logic_power: "A8"
+    
+    # Umbrales por canal (V)
+    voltage_thresholds:
+      main_power: [20.0, 22.0]    # [crítico, bajo]
+      motor_power: [18.0, 20.0]
+      logic_power: [4.5, 5.0]
+    
+    # Monitoreo
+    monitor_frequency: 5.0      # Hz
+
+# Calibración de Ruedas
+wheel_calibration_node:
+  ros__parameters:
+    # Distancia de prueba para calibración
+    calibration_distance: 2.0  # metros
+    calibration_speed: 0.2     # m/s
+    
+    # Tolerancias
+    distance_tolerance: 0.05   # metros
+    angle_tolerance: 0.087     # radianes (5 grados)
+    
+    # Parámetros de calibración
+    max_calibration_attempts: 3
+    calibration_timeout: 30.0  # segundos
+
+# Calibración de Sensores
+sensor_calibration_node:
+  ros__parameters:
+    # Tiempo de calibración
+    calibration_time: 10.0     # segundos
+    
+    # Muestras para calibración
+    calibration_samples: 1000
+    
+    # Archivos de calibración
+    save_calibration: true
+    calibration_file_path: "/opt/ros/humble/share/tadeo_ecar_bringup/config/sensor_calibration.yaml"
+
+# Watchdog de Hardware
+hardware_watchdog_node:
+  ros__parameters:
+    # Timeouts de componentes críticos (segundos)
+    component_timeouts:
+      motor_driver: 1.0
+      lidar_driver: 2.0
+      camera_driver: 3.0
+      imu_driver: 1.0
+      battery_monitor: 5.0
+    
+    # Acciones de watchdog
+    emergency_stop_on_timeout: true
+    restart_failed_nodes: true
+    max_restart_attempts: 3
+    
+    # Frecuencia de verificación
+    watchdog_frequency: 10.0   # Hz

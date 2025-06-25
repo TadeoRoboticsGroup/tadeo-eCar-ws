@@ -90,3 +90,16 @@ colcon build --packages-up-to tadeo_ecar_msgs
 **Versión:** 1.0.0  
 **Compatible:** ROS2 Humble  
 **Licencia:** MIT
+
+## Contacto y Soporte
+
+### 📞 **Soporte Técnico**
+- **Email**: ing.marioalvarezvallejo@gmail.com
+- **GitHub**: [TadeoRoboticsGroup](http://github.com/TadeoRoboticsGroup)
+- **Issues**: [Reportar Problemas](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws/issues)
+- **Sitio Web**: [Semillero de Robótica](https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/)
+
+### 🌐 **Enlaces del Proyecto**
+- **Organización**: [TadeoRoboticsGroup](http://github.com/TadeoRoboticsGroup)
+- **Repositorio**: [tadeo-eCar-ws](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws)
+- **Sitio Web**: [Semillero de Robótica](https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/)

@@ -4,8 +4,14 @@
   <name>tadeo_ecar_navigation</name>
   <version>1.0.0</version>
   <description>Sistema de navegación de alto nivel para robot autónomo Tadeo eCar</description>
-  <maintainer email="tadeo@robot.com">Tadeo eCar Team</maintainer>
-  <license>MIT</license>
+  <maintainer email="ing.marioalvarezvallejo@gmail.com">Semillero Robótica</maintainer>
+  
+  <author email="ing.marioalvarezvallejo@gmail.com">Semillero Robótica Development Team</author>
+  <license>Proprietary</license>
+  
+  <url type="website">https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/</url>
+  <url type="bugtracker">https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws/issues</url>
+  <url type="repository">https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

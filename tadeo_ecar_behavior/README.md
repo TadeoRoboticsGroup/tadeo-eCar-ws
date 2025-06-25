@@ -693,8 +693,22 @@ monitor_frequency: 5.0                # Monitoreo más frecuente
 
 ## Licencia y Créditos
 
-Desarrollado como parte del proyecto Tadeo eCar para investigación en comportamientos robóticos autónomos. El sistema utiliza BehaviorTree.CPP para crear comportamientos robustos y reutilizables optimizados para robots móviles 4WD4WS.
+**Repositorio Privado - Semillero de Robótica**
+
+Copyright (c) 2024 Semillero de Robótica. Todos los derechos reservados.
+
+Desarrollado como parte del proyecto eCar para investigación en comportamientos robóticos autónomos. El sistema utiliza BehaviorTree.CPP para crear comportamientos robustos y reutilizables optimizados para robots móviles 4WD4WS.
+
+### 🌐 **Enlaces del Proyecto**
+- **Organización**: [TadeoRoboticsGroup](http://github.com/TadeoRoboticsGroup)
+- **Repositorio**: [tadeo-eCar-ws](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws)
+- **Sitio Web**: [Semillero de Robótica](https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/)
 
 ## Contacto y Soporte
 
-Para problemas técnicos, nuevas funcionalidades o contribuciones al sistema de comportamientos, consultar la documentación técnica completa del proyecto Tadeo eCar.
+### 📞 **Soporte Técnico**
+- **Email**: ing.marioalvarezvallejo@gmail.com
+- **GitHub**: [TadeoRoboticsGroup](http://github.com/TadeoRoboticsGroup)
+- **Issues**: [Reportar Problemas](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws/issues)
+
+Para problemas técnicos, nuevas funcionalidades o contribuciones al sistema de comportamientos, usar el sistema de issues del repositorio.

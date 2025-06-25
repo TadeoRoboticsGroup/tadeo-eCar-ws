@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>tadeo_ecar_bringup</name>
+  <version>1.0.0</version>
+  <description>Sistema de arranque completo para el robot autónomo Tadeo eCar 4WD4WS</description>
+  
+  <maintainer email="ing.marioalvarezvallejo@gmail.com">Semillero Robótica</maintainer>
+  
+  <author email="ing.marioalvarezvallejo@gmail.com">Semillero Robótica Development Team</author>
+  <license>Proprietary</license>
+  
+  
+  <url type="website">https://tadeoroboticsgroup.github.io/TadeoRoboticsGroup/</url>
+  <url type="bugtracker">https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws/issues</url>
+  <url type="repository">https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws</url>
+  
+  <!-- Build Dependencies -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+  
+  <!-- Tadeo eCar Package Dependencies -->
+  <exec_depend>tadeo_ecar_msgs</exec_depend>
+  <exec_depend>tadeo_ecar_interfaces</exec_depend>
+  <exec_depend>tadeo_ecar_config</exec_depend>
+  <exec_depend>tadeo_ecar_description</exec_depend>
+  <exec_depend>tadeo_ecar_control</exec_depend>
+  <exec_depend>tadeo_ecar_perception</exec_depend>
+  <exec_depend>tadeo_ecar_safety</exec_depend>
+  <exec_depend>tadeo_ecar_localization</exec_depend>
+  <exec_depend>tadeo_ecar_slam</exec_depend>
+  <exec_depend>tadeo_ecar_planning</exec_depend>
+  <exec_depend>tadeo_ecar_navigation</exec_depend>
+  <exec_depend>tadeo_ecar_behavior</exec_depend>
+  
+  <!-- ROS2 Core Dependencies -->
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>joint_state_publisher</exec_depend>
+  
+  <!-- Navigation Dependencies -->
+  <exec_depend>nav2_bringup</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+  <exec_depend>nav2_common</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+  
+  <!-- SLAM Dependencies -->
+  <exec_depend>slam_toolbox</exec_depend>
+  <exec_depend>cartographer_ros</exec_depend>
+  
+  <!-- Simulation Dependencies -->
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>gazebo_ros_pkgs</exec_depend>
+  <exec_depend>ignition_gazebo</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  
+  <!-- Visualization Dependencies -->
+  <exec_depend>rviz2</exec_depend>
+  <exec_depend>rviz_common</exec_depend>
+  <exec_depend>rviz_default_plugins</exec_depend>
+  <exec_depend>foxglove_bridge</exec_depend>
+  
+  <!-- Monitoring and Logging Dependencies -->
+  <exec_depend>ros2_control</exec_depend>
+  <exec_depend>ros2_controllers</exec_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
+  <exec_depend>diagnostic_updater</exec_depend>
+  <exec_depend>rosbag2</exec_depend>
+  <exec_depend>rosbag2_transport</exec_depend>
+  
+  <!-- BehaviorTree Dependencies -->
+  <exec_depend>behaviortree_cpp_v3</exec_depend>
+  
+  <!-- Python Launch Dependencies -->
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+  <exec_depend>launch_xml</exec_depend>
+  <exec_depend>launch_yaml</exec_depend>
+  
+  <!-- Development and Testing Dependencies -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+  <test_depend>python3-pytest</test_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+  
+</package>
