@@ -7,6 +7,23 @@
 <img src="/documentation/images/portada.png" width="300"/>
 </div>
 
+
+[![Lenguaje C++](https://img.shields.io/badge/C++-17-blue)](#)
+[![Lenguaje Python](https://img.shields.io/badge/Python-3.8+-yellow?logo=python)](#)
+[![Sistema Operativo](https://img.shields.io/badge/Ubuntu-22.04-E95420?logo=ubuntu)](#)
+[![ROS2 Humble](https://img.shields.io/badge/ROS2-Humble-22314E?logo=ros)](#)
+[![Gazebo Ignition](https://img.shields.io/badge/Gazebo-Ignition-orange?logo=gazebo)](#)
+[![VS Code](https://img.shields.io/badge/IDE-VS%20Code-007ACC?logo=visualstudiocode)](#)
+[![Shell](https://img.shields.io/badge/Shell-Bash-4EAA25?logo=gnubash)](#)
+[![Docker](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker)](#)
+[![Docker Compose](https://img.shields.io/badge/Docker--Compose-Blue?logo=docker)](#)
+[![Arquitectura](https://img.shields.io/badge/CPU-x86_64%20%7C%20ARM64-lightgrey?logo=amd)](#)
+[![Licencia](https://img.shields.io/badge/Licencia-Privada-red)](#)
+[![Versión Actual](https://img.shields.io/badge/Versión-v1.0.0-blue)](#)
+[![Repositorio](https://img.shields.io/badge/GitHub-TadeoRoboticsGroup-181717?logo=github)](https://github.com/TadeoRoboticsGroup/tadeo-eCar-ws)
+
+
+
 > Plataforma robótica autónoma para logística universitaria en interiores. Robot eléctrico omnidireccional 4WD 4WS con capacidades de navegación autónoma, SLAM, visión computacional y planificación de trayectorias usando ROS2 Humble. Diseñado para transporte de materiales en ambientes universitarios.
 
 ---
