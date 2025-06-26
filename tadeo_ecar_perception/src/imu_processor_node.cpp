@@ -424,32 +424,51 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "imu_link";
         
-        health_msg.component_name = "imu_processor";
-        
         auto current_time = this->now();
         bool data_timeout = (current_time - last_imu_time_).seconds() > 1.0;
         
+        // Set IMU status
         if (data_timeout) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 3001;
-            health_msg.error_message = "No IMU data received";
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.error_codes.push_back(3001);
+            health_msg.error_messages.push_back("No IMU data received");
         } else if (!is_calibrated_) {
-            health_msg.status = "CALIBRATING";
-            health_msg.error_code = 3002;
-            health_msg.error_message = "IMU calibration in progress";
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.error_codes.push_back(3002);
+            health_msg.error_messages.push_back("IMU calibration in progress");
         } else if (!is_stable_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 3003;
-            health_msg.error_message = "High vibration detected";
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.error_codes.push_back(3003);
+            health_msg.error_messages.push_back("High vibration detected");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         }
         
-        health_msg.cpu_usage = 15.0; // Placeholder
-        health_msg.memory_usage = 10.0; // Placeholder
-        health_msg.temperature = 40.0; // Placeholder
+        // Set system component statuses
+        health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set motor statuses
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 40.0; // Placeholder
+        health_msg.gpu_temperature = 38.0; // Placeholder
+        health_msg.motor_temperature = 35.0; // Placeholder
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "IMU processor running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -467,7 +486,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr longitudinal_acceleration_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr tilt_angle_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
-    rclcpp::TimerInterface::SharedPtr processing_timer_;
+    rclcpp::TimerBase::SharedPtr processing_timer_;
     
     // Parameters
     double processing_frequency_;

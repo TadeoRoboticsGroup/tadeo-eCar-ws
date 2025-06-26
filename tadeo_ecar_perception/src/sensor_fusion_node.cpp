@@ -522,8 +522,6 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "base_link";
         
-        health_msg.component_name = "sensor_fusion";
-        
         // Calculate overall health based on sensor status
         int active_sensors = 0;
         int total_sensors = sensor_status_.size();
@@ -536,23 +534,56 @@ private:
         
         double health_ratio = static_cast<double>(active_sensors) / total_sensors;
         
+        // Set system component statuses based on fusion health
         if (health_ratio >= 0.8) {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         } else if (health_ratio >= 0.5) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 4001;
-            health_msg.error_message = "Some sensors unavailable";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(4001);
+            health_msg.error_messages.push_back("Some sensors unavailable");
         } else {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 4002;
-            health_msg.error_message = "Multiple sensor failures";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(4002);
+            health_msg.error_messages.push_back("Multiple sensor failures");
         }
         
-        health_msg.cpu_usage = 30.0; // Placeholder
-        health_msg.memory_usage = 20.0; // Placeholder
-        health_msg.temperature = 45.0; // Placeholder
+        // Set motor statuses
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 45.0; // Placeholder
+        health_msg.gpu_temperature = 42.0; // Placeholder
+        health_msg.motor_temperature = 38.0; // Placeholder
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "Sensor fusion running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         sensor_status_pub_->publish(health_msg);
     }
@@ -569,7 +600,7 @@ private:
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr sensor_status_pub_;
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr confidence_map_pub_;
     
-    rclcpp::TimerInterface::SharedPtr fusion_timer_;
+    rclcpp::TimerBase::SharedPtr fusion_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

@@ -128,7 +128,7 @@ Esta documentación te llevará desde los conceptos básicos de ROS2 hasta el de
 - System services
 - Monitoring en producción
 
-**[20. Temas Avanzados](20-avanzado/README.md)**
+**[20. Temas Avanzados](20-advanced/README.md)**
 - DDS y comunicación
 - Security en ROS2
 - Multi-robot systems

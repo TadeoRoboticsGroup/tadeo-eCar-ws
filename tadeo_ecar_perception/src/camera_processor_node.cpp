@@ -27,7 +27,7 @@ struct DetectedObject
 class CameraProcessorNode : public rclcpp::Node
 {
 public:
-    CameraProcessorNode() : Node("camera_processor_node"), it_(this)
+    CameraProcessorNode() : Node("camera_processor_node"), it_(std::shared_ptr<rclcpp::Node>(this, [](rclcpp::Node*){}))
     {
         loadParameters();
         initializeDetectors();
@@ -445,19 +445,33 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "camera_link";
         
-        health_msg.component_name = "camera_processor";
-        health_msg.status = current_image_.empty() ? "ERROR" : "OK";
-        health_msg.cpu_usage = 25.0; // Placeholder
-        health_msg.memory_usage = 15.0; // Placeholder
-        health_msg.temperature = 45.0; // Placeholder
+        // Set camera status based on image availability
+        health_msg.camera_status = current_image_.empty() ? 
+            tadeo_ecar_msgs::msg::SystemHealth::ERROR : 
+            tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         
+        // Set system component statuses
+        health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 45.0; // Placeholder
+        health_msg.gpu_temperature = 42.0; // Placeholder
+        health_msg.motor_temperature = 38.0; // Placeholder
+        
+        // Set error information if needed
         if (current_image_.empty()) {
-            health_msg.error_code = 1001;
-            health_msg.error_message = "No camera image received";
-        } else {
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.error_codes.push_back(1001);
+            health_msg.error_messages.push_back("No camera image received");
         }
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "Camera processor running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -470,7 +484,7 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr objects_pub_;
     rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr lane_points_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
-    rclcpp::TimerInterface::SharedPtr processing_timer_;
+    rclcpp::TimerBase::SharedPtr processing_timer_;
     
     // Parameters
     double processing_frequency_;

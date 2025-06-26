@@ -512,25 +512,44 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "laser_link";
         
-        health_msg.component_name = "lidar_processor";
-        
         auto current_time = this->now();
         bool scan_timeout = (current_time - last_scan_time_).seconds() > 1.0;
         bool cloud_timeout = (current_time - last_cloud_time_).seconds() > 1.0;
         
+        // Set LiDAR status
         if (scan_timeout && cloud_timeout) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 2001;
-            health_msg.error_message = "No LiDAR data received";
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.error_codes.push_back(2001);
+            health_msg.error_messages.push_back("No LiDAR data received");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         }
         
-        health_msg.cpu_usage = 35.0; // Placeholder
-        health_msg.memory_usage = 25.0; // Placeholder
-        health_msg.temperature = 50.0; // Placeholder
+        // Set system component statuses
+        health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set motor statuses
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 50.0; // Placeholder
+        health_msg.gpu_temperature = 47.0; // Placeholder
+        health_msg.motor_temperature = 42.0; // Placeholder
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "LiDAR processor running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -544,7 +563,7 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr free_space_pub_;
     rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr closest_obstacle_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
-    rclcpp::TimerInterface::SharedPtr processing_timer_;
+    rclcpp::TimerBase::SharedPtr processing_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
