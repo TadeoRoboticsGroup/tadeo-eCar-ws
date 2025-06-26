@@ -293,7 +293,7 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_out_pub_;
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::RobotStatus>::SharedPtr robot_status_pub_;
-    rclcpp::TimerInterface::SharedPtr control_timer_;
+    rclcpp::TimerBase::SharedPtr control_timer_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     
     // Parameters

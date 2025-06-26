@@ -4,6 +4,7 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <Eigen/Dense>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
 
@@ -224,23 +225,60 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "base_link";
         
-        health_msg.component_name = "map_matcher";
-        health_msg.status = status;
-        
+        // Set system component statuses based on map matching health
         if (status == "OK") {
-            health_msg.error_code = 0;
-        } else if (status == "WARNING") {
-            health_msg.error_code = 6005;
-        } else if (status == "WAITING") {
-            health_msg.error_code = 6006;
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        } else if (status == "WARNING" || status == "WAITING") {
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            if (status == "WARNING") {
+                health_msg.error_codes.push_back(6005);
+            } else {
+                health_msg.error_codes.push_back(6006);
+            }
+            health_msg.error_messages.push_back(message);
         } else {
-            health_msg.error_code = 6007;
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(6007);
+            health_msg.error_messages.push_back(message);
         }
         
-        health_msg.error_message = message;
-        health_msg.cpu_usage = 30.0;
-        health_msg.memory_usage = 25.0;
-        health_msg.temperature = 48.0;
+        // Set motor statuses
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 48.0; // Placeholder
+        health_msg.gpu_temperature = 45.0; // Placeholder
+        health_msg.motor_temperature = 40.0; // Placeholder
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "Map matcher running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -253,7 +291,7 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr corrected_pose_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr matching_timer_;
+    rclcpp::TimerBase::SharedPtr matching_timer_;
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
     

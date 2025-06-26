@@ -9,7 +9,7 @@
 #include <tf2_ros/buffer.h>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
 #include <tadeo_ecar_interfaces/action/follow_path.hpp>
-#include <tadeo_ecar_interfaces/srv/navigate_to_goal.hpp>
+#include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
 #include "tadeo_ecar_navigation/navigation_types.hpp"
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -648,62 +648,62 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "mission_executor";
+        // Remove component_name field - not part of SystemHealth message
         
         // Determine health status
         switch (current_mission_state_) {
             case MissionExecutionState::IDLE:
-                health_msg.status = "IDLE";
-                health_msg.error_code = 0;
-                health_msg.error_message = "Ready for mission";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(0);
+                health_msg.error_messages.push_back("Ready for mission");
                 break;
             
             case MissionExecutionState::LOADED:
-                health_msg.status = "READY";
-                health_msg.error_code = 0;
-                health_msg.error_message = "Mission loaded";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(0);
+                health_msg.error_messages.push_back("Mission loaded");
                 break;
             
             case MissionExecutionState::EXECUTING:
-                health_msg.status = "OK";
-                health_msg.error_code = 0;
-                health_msg.error_message = "Mission executing";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(0);
+                health_msg.error_messages.push_back("Mission executing");
                 break;
             
             case MissionExecutionState::PAUSED:
-                health_msg.status = "PAUSED";
-                health_msg.error_code = 16001;
-                health_msg.error_message = "Mission paused";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(16001);
+                health_msg.error_messages.push_back("Mission paused");
                 break;
             
             case MissionExecutionState::COMPLETED:
-                health_msg.status = "SUCCESS";
-                health_msg.error_code = 0;
-                health_msg.error_message = "Mission completed";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(0);
+                health_msg.error_messages.push_back("Mission completed");
                 break;
             
             case MissionExecutionState::FAILED:
-                health_msg.status = "ERROR";
-                health_msg.error_code = 16002;
-                health_msg.error_message = "Mission failed";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(16002);
+                health_msg.error_messages.push_back("Mission failed");
                 break;
             
             case MissionExecutionState::STOPPED:
-                health_msg.status = "STOPPED";
-                health_msg.error_code = 16003;
-                health_msg.error_message = "Mission stopped";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(16003);
+                health_msg.error_messages.push_back("Mission stopped");
                 break;
             
             default:
-                health_msg.status = "UNKNOWN";
-                health_msg.error_code = 16999;
-                health_msg.error_message = "Unknown state";
+                // Use appropriate status enum instead of string status
+                health_msg.error_codes.push_back(16999);
+                health_msg.error_messages.push_back("Unknown state");
                 break;
         }
         
-        health_msg.cpu_usage = 15.0; // Placeholder
-        health_msg.memory_usage = 12.0; // Placeholder
-        health_msg.temperature = 35.0; // Placeholder
+        // Replace with cpu_temperature = 15.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -852,8 +852,8 @@ private:
     
     rclcpp::Client<tadeo_ecar_interfaces::srv::NavigateToGoal>::SharedPtr navigate_client_;
     
-    rclcpp::TimerInterface::SharedPtr execution_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr execution_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

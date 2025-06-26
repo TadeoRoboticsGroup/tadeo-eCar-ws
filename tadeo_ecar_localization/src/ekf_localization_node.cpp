@@ -447,29 +447,60 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_link_frame_;
         
-        health_msg.component_name = "ekf_localization";
-        
         // Check filter health based on covariance trace
         const Eigen::MatrixXd& cov = ekf_->getCovariance();
         double trace = cov.trace();
         
+        // Set system component statuses based on filter health
         if (trace > 100.0) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 6001;
-            health_msg.error_message = "High uncertainty in localization";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(6001);
+            health_msg.error_messages.push_back("High uncertainty in localization");
         } else if (trace > 1000.0) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 6002;
-            health_msg.error_message = "Very high uncertainty - filter may have diverged";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(6002);
+            health_msg.error_messages.push_back("Very high uncertainty - filter may have diverged");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         }
         
-        health_msg.cpu_usage = 20.0; // Placeholder
-        health_msg.memory_usage = 15.0; // Placeholder
-        health_msg.temperature = 45.0; // Placeholder
+        // Set motor statuses
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 45.0; // Placeholder
+        health_msg.gpu_temperature = 42.0; // Placeholder
+        health_msg.motor_temperature = 38.0; // Placeholder
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "EKF localization running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -483,7 +514,7 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr pose_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr filter_timer_;
+    rclcpp::TimerBase::SharedPtr filter_timer_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     
     // Parameters

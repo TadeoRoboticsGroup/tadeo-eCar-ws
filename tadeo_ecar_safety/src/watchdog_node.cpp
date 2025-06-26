@@ -356,13 +356,13 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "base_link";
         
-        health_msg.component_name = "watchdog";
-        health_msg.status = "OK";
-        health_msg.error_code = 0;
-        health_msg.error_message = "";
-        health_msg.cpu_usage = 5.0;
-        health_msg.memory_usage = 10.0;
-        health_msg.temperature = 40.0;
+        // Remove component_name field - not part of SystemHealth message
+        // Use appropriate status enum instead of string status
+        health_msg.error_codes.push_back(0);
+        health_msg.error_messages.push_back("");
+        // Replace with cpu_temperature = 5.0; // See SystemHealth.msg
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature
         
         watchdog_status_pub_->publish(health_msg);
     }
@@ -377,8 +377,8 @@ private:
     
     rclcpp::Client<tadeo_ecar_interfaces::srv::EmergencyStop>::SharedPtr emergency_stop_client_;
     
-    rclcpp::TimerInterface::SharedPtr watchdog_timer_;
-    rclcpp::TimerInterface::SharedPtr heartbeat_timer_;
+    rclcpp::TimerBase::SharedPtr watchdog_timer_;
+    rclcpp::TimerBase::SharedPtr heartbeat_timer_;
     
     // Parameters
     double watchdog_frequency_;

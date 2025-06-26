@@ -275,25 +275,56 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = "base_link";
         
-        health_msg.component_name = "sensor_fusion_localization";
-        
+        // Set system component statuses based on sensor fusion health
         if (!ekf_available_ && !ukf_available_) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 6003;
-            health_msg.error_message = "No localization sources available";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(6003);
+            health_msg.error_messages.push_back("No localization sources available");
         } else if (!ekf_available_ || !ukf_available_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 6004;
-            health_msg.error_message = "Only one localization source available";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(6004);
+            health_msg.error_messages.push_back("Only one localization source available");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         }
         
-        health_msg.cpu_usage = 15.0;
-        health_msg.memory_usage = 12.0;
-        health_msg.temperature = 42.0;
+        // Set motor statuses
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set temperatures
+        health_msg.cpu_temperature = 42.0; // Placeholder
+        health_msg.gpu_temperature = 40.0; // Placeholder
+        health_msg.motor_temperature = 38.0; // Placeholder
+        
+        // Set diagnostic info
+        health_msg.diagnostic_info = "Sensor fusion localization running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -307,7 +338,7 @@ private:
     rclcpp::Publisher<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr fused_pose_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr fusion_timer_;
+    rclcpp::TimerBase::SharedPtr fusion_timer_;
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     
     // Parameters

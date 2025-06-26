@@ -504,33 +504,33 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "trajectory_optimizer";
+        // Remove component_name field - not part of SystemHealth message
         
         // Check system health
         auto current_time = this->now();
         bool path_timeout = raw_path_available_ && (current_time - last_path_time_).seconds() > 5.0;
         
         if (path_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 13001;
-            health_msg.error_message = "Raw path timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(13001);
+            health_msg.error_messages.push_back("Raw path timeout");
         } else if (optimization_in_progress_) {
-            health_msg.status = "OPTIMIZING";
-            health_msg.error_code = 13002;
-            health_msg.error_message = "Optimization in progress";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(13002);
+            health_msg.error_messages.push_back("Optimization in progress");
         } else if (!raw_path_available_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 13003;
-            health_msg.error_message = "Waiting for raw path";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(13003);
+            health_msg.error_messages.push_back("Waiting for raw path");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 20.0; // Placeholder
-        health_msg.memory_usage = 10.0; // Placeholder
-        health_msg.temperature = 35.0; // Placeholder
+        // Replace with cpu_temperature = 20.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -543,8 +543,8 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr trajectory_viz_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr optimization_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr optimization_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

@@ -694,33 +694,33 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "navigation_monitor";
+        // Remove component_name field - not part of SystemHealth message
         
         // Determine health status based on quality score
         if (navigation_quality_score_ > alert_threshold_high_) {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         } else if (navigation_quality_score_ > alert_threshold_medium_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 18001;
-            health_msg.error_message = "Navigation quality degraded";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(18001);
+            health_msg.error_messages.push_back("Navigation quality degraded");
         } else {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 18002;
-            health_msg.error_message = "Poor navigation quality";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(18002);
+            health_msg.error_messages.push_back("Poor navigation quality");
         }
         
         // Check for data freshness issues
         if (!data_freshness_.odom_fresh) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 18003;
-            health_msg.error_message = "Stale odometry data";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(18003);
+            health_msg.error_messages.push_back("Stale odometry data");
         }
         
-        health_msg.cpu_usage = 8.0; // Placeholder
-        health_msg.memory_usage = 6.0; // Placeholder
-        health_msg.temperature = 32.0; // Placeholder
+        // Replace with cpu_temperature = 8.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -740,8 +740,8 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr monitor_viz_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr monitor_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr monitor_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

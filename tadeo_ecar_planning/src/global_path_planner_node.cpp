@@ -8,7 +8,7 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
-#include <tadeo_ecar_interfaces/srv/navigate_to_goal.hpp>
+#include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
 #include "tadeo_ecar_planning/planning_types.hpp"
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
@@ -475,7 +475,7 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "global_path_planner";
+        // Remove component_name field - not part of SystemHealth message
         
         // Check system health
         auto current_time = this->now();
@@ -483,34 +483,34 @@ private:
         bool pose_timeout = current_pose_available_ && (current_time - last_pose_time_).seconds() > 2.0;
         
         if (map_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 11001;
-            health_msg.error_message = "Map data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(11001);
+            health_msg.error_messages.push_back("Map data timeout");
         } else if (pose_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 11002;
-            health_msg.error_message = "Pose data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(11002);
+            health_msg.error_messages.push_back("Pose data timeout");
         } else if (planning_in_progress_) {
-            health_msg.status = "PLANNING";
-            health_msg.error_code = 11003;
-            health_msg.error_message = "Planning in progress";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(11003);
+            health_msg.error_messages.push_back("Planning in progress");
         } else if (!map_available_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 11004;
-            health_msg.error_message = "Waiting for map data";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(11004);
+            health_msg.error_messages.push_back("Waiting for map data");
         } else if (!current_pose_available_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 11005;
-            health_msg.error_message = "Waiting for pose data";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(11005);
+            health_msg.error_messages.push_back("Waiting for pose data");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 30.0; // Placeholder
-        health_msg.memory_usage = 25.0; // Placeholder
-        health_msg.temperature = 45.0; // Placeholder
+        // Replace with cpu_temperature = 30.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -577,8 +577,8 @@ private:
     
     rclcpp::Service<tadeo_ecar_interfaces::srv::NavigateToGoal>::SharedPtr plan_service_;
     
-    rclcpp::TimerInterface::SharedPtr planning_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr planning_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

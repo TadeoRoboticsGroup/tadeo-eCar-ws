@@ -253,7 +253,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr lateral_acceleration_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr slip_angle_pub_;
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr stability_factor_pub_;
-    rclcpp::TimerInterface::SharedPtr dynamics_timer_;
+    rclcpp::TimerBase::SharedPtr dynamics_timer_;
     
     // Vehicle parameters
     double vehicle_mass_;

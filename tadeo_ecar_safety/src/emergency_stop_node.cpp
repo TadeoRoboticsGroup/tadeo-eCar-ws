@@ -357,7 +357,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr safety_override_pub_;
     
     rclcpp::Service<tadeo_ecar_interfaces::srv::EmergencyStop>::SharedPtr emergency_stop_service_;
-    rclcpp::TimerInterface::SharedPtr monitor_timer_;
+    rclcpp::TimerBase::SharedPtr monitor_timer_;
     
     // Parameters
     double monitor_frequency_;

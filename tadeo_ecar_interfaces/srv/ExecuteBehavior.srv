@@ -1,0 +1,14 @@
+# Request: Execute behavior tree
+string behavior_name
+string[] parameters
+bool preempt_current
+uint8 execution_mode
+string execution_timeout
+---
+# Response: Behavior execution result
+bool success
+string message
+string execution_id
+float64 execution_time
+string final_state
+string[] output_parameters

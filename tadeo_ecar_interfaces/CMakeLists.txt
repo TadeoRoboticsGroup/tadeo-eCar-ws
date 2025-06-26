@@ -21,6 +21,7 @@ set(srv_files
   "srv/GetSystemStatus.srv"
   "srv/EmergencyStop.srv"
   "srv/SaveMap.srv"
+  "srv/ExecuteBehavior.srv"
 )
 
 set(action_files

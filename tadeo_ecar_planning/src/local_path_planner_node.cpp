@@ -546,7 +546,7 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "local_path_planner";
+        // Remove component_name field - not part of SystemHealth message
         
         // Check system health
         auto current_time = this->now();
@@ -555,38 +555,38 @@ private:
         bool scan_timeout = obstacle_avoidance_enabled_ && (current_time - last_scan_time_).seconds() > 1.0;
         
         if (odom_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 12001;
-            health_msg.error_message = "Odometry data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(12001);
+            health_msg.error_messages.push_back("Odometry data timeout");
         } else if (path_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 12002;
-            health_msg.error_message = "Global path timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(12002);
+            health_msg.error_messages.push_back("Global path timeout");
         } else if (scan_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 12003;
-            health_msg.error_message = "Scan data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(12003);
+            health_msg.error_messages.push_back("Scan data timeout");
         } else if (!current_pose_available_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 12004;
-            health_msg.error_message = "Waiting for odometry";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(12004);
+            health_msg.error_messages.push_back("Waiting for odometry");
         } else if (!global_path_available_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 12005;
-            health_msg.error_message = "Waiting for global path";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(12005);
+            health_msg.error_messages.push_back("Waiting for global path");
         } else if (at_goal_) {
-            health_msg.status = "AT_GOAL";
-            health_msg.error_code = 12006;
-            health_msg.error_message = "Reached goal";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(12006);
+            health_msg.error_messages.push_back("Reached goal");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 25.0; // Placeholder
-        health_msg.memory_usage = 15.0; // Placeholder
-        health_msg.temperature = 40.0; // Placeholder
+        // Replace with cpu_temperature = 25.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -601,8 +601,8 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr trajectory_viz_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr planning_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr planning_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

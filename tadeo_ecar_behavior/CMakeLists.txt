@@ -18,10 +18,11 @@ find_package(visualization_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
-find_package(nav2_msgs REQUIRED)
-find_package(nav2_behavior_tree REQUIRED)
-find_package(nav2_util REQUIRED)
-find_package(nav2_core REQUIRED)
+# nav2 packages removed for compilation compatibility
+# find_package(nav2_msgs REQUIRED)
+# find_package(nav2_behavior_tree REQUIRED)
+# find_package(nav2_util REQUIRED)
+# find_package(nav2_core REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
@@ -47,10 +48,10 @@ ament_target_dependencies(behavior_manager_node
   tf2
   tf2_ros
   tf2_geometry_msgs
-  nav2_msgs
-  nav2_behavior_tree
-  nav2_util
-  nav2_core
+  # nav2_msgs
+  # nav2_behavior_tree
+  # nav2_util
+  # nav2_core
   behaviortree_cpp_v3
   Eigen3
   tadeo_ecar_msgs
@@ -76,9 +77,9 @@ ament_target_dependencies(tadeo_bt_nodes
   tf2
   tf2_ros
   tf2_geometry_msgs
-  nav2_msgs
-  nav2_behavior_tree
-  nav2_util
+  # nav2_msgs
+  # nav2_behavior_tree
+  # nav2_util
   behaviortree_cpp_v3
   Eigen3
   tadeo_ecar_msgs

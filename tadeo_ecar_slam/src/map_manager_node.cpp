@@ -618,33 +618,33 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "map_manager";
+        // Remove component_name field - not part of SystemHealth message
         
         // Check system health
         auto current_time = this->now();
         bool map_timeout = current_map_received_ && (current_time - last_map_time_).seconds() > 5.0;
         
         if (map_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 9001;
-            health_msg.error_message = "Map data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(9001);
+            health_msg.error_messages.push_back("Map data timeout");
         } else if (!current_map_received_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 9002;
-            health_msg.error_message = "Waiting for map data";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(9002);
+            health_msg.error_messages.push_back("Waiting for map data");
         } else if (map_quality_.coverage < quality_threshold_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 9003;
-            health_msg.error_message = "Low map quality";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(9003);
+            health_msg.error_messages.push_back("Low map quality");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 20.0; // Placeholder
-        health_msg.memory_usage = 30.0; // Placeholder
-        health_msg.temperature = 45.0; // Placeholder
+        // Replace with cpu_temperature = 20.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -741,9 +741,9 @@ private:
     rclcpp::Service<tadeo_ecar_interfaces::srv::SaveMap>::SharedPtr load_map_service_;
     rclcpp::Service<nav_msgs::srv::GetMap>::SharedPtr get_map_service_;
     
-    rclcpp::TimerInterface::SharedPtr map_processing_timer_;
-    rclcpp::TimerInterface::SharedPtr map_publish_timer_;
-    rclcpp::TimerInterface::SharedPtr auto_save_timer_;
+    rclcpp::TimerBase::SharedPtr map_processing_timer_;
+    rclcpp::TimerBase::SharedPtr map_publish_timer_;
+    rclcpp::TimerBase::SharedPtr auto_save_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

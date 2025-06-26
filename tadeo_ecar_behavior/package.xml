@@ -39,8 +39,8 @@
   
   <!-- BehaviorTree dependencies -->
   <depend>behaviortree_cpp_v3</depend>
-  <depend>nav2_behavior_tree</depend>
-  <depend>nav2_msgs</depend>
+  <!-- <depend>nav2_behavior_tree</depend> -->
+  <!-- <depend>nav2_msgs</depend> -->
   
   <!-- Tadeo eCar custom packages -->
   <depend>tadeo_ecar_msgs</depend>
@@ -52,8 +52,8 @@
   <depend>Eigen3</depend>
   
   <!-- Navigation and control -->
-  <depend>nav2_util</depend>
-  <depend>nav2_core</depend>
+  <!-- <depend>nav2_util</depend> -->
+  <!-- <depend>nav2_core</depend> -->
   
   <!-- Testing dependencies -->
   <test_depend>ament_lint_auto</test_depend>

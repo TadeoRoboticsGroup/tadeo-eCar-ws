@@ -8,7 +8,7 @@
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/buffer.h>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
-#include <tadeo_ecar_interfaces/srv/navigate_to_goal.hpp>
+#include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
 #include "tadeo_ecar_navigation/navigation_types.hpp"
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -632,25 +632,25 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "waypoint_manager";
+        // Remove component_name field - not part of SystemHealth message
         
         if (editing_mode_) {
-            health_msg.status = "EDITING";
-            health_msg.error_code = 17001;
-            health_msg.error_message = "Waypoint editing active";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(17001);
+            health_msg.error_messages.push_back("Waypoint editing active");
         } else if (current_editing_waypoints_.size() > max_waypoints_per_mission_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 17002;
-            health_msg.error_message = "Too many waypoints";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(17002);
+            health_msg.error_messages.push_back("Too many waypoints");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 10.0; // Placeholder
-        health_msg.memory_usage = 8.0; // Placeholder
-        health_msg.temperature = 30.0; // Placeholder
+        // Replace with cpu_temperature = 10.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -691,8 +691,8 @@ private:
     
     rclcpp::Service<tadeo_ecar_interfaces::srv::NavigateToGoal>::SharedPtr add_waypoint_service_;
     
-    rclcpp::TimerInterface::SharedPtr manager_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr manager_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

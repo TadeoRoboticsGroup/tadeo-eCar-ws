@@ -304,30 +304,52 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "behavior_monitor";
+        // Remove component_name field - not part of SystemHealth message
         
-        // Determinar estado de salud
+        // Set appropriate status enum fields
         if (monitor_metrics_.current_performance < 0.3) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 21001;
-            health_msg.error_message = "Critical performance degradation";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.error_codes.push_back(21001);
+            health_msg.error_messages.push_back("Critical performance degradation");
         } else if (monitor_metrics_.current_performance < performance_threshold_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 21002;
-            health_msg.error_message = "Performance below threshold";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(21002);
+            health_msg.error_messages.push_back("Performance below threshold");
         } else if (!detected_anomalies_.empty()) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 21003;
-            health_msg.error_message = "Anomalies detected in behavior system";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(21003);
+            health_msg.error_messages.push_back("Anomalies detected in behavior system");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         }
         
-        health_msg.cpu_usage = 2.0; // Placeholder
-        health_msg.memory_usage = 4.0; // Placeholder
-        health_msg.temperature = 33.0; // Placeholder
+        // Set proper temperature fields
+        health_msg.cpu_temperature = 33.0; // Placeholder
+        health_msg.gpu_temperature = 30.0; // Placeholder
+        health_msg.motor_temperature = 28.0; // Placeholder
+        
+        // Set other status fields
+        health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set motor status fields
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set diagnostic info and uptime
+        health_msg.diagnostic_info = "Behavior monitor running normally";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            (this->now() - monitor_metrics_.session_start_time).seconds());
         
         health_pub_->publish(health_msg);
     }
@@ -444,7 +466,7 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr behavior_viz_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr monitor_timer_;
+    rclcpp::TimerBase::SharedPtr monitor_timer_;
 };
 
 } // namespace tadeo_ecar_behavior

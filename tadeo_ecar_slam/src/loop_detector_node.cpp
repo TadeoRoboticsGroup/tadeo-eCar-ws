@@ -683,7 +683,7 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "loop_detector";
+        // Remove component_name field - not part of SystemHealth message
         
         // Check system health
         auto current_time = this->now();
@@ -691,26 +691,26 @@ private:
         bool pose_timeout = current_pose_available_ && (current_time - last_pose_time_).seconds() > 2.0;
         
         if (sensor_timeout || pose_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 10001;
-            health_msg.error_message = "Sensor data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(10001);
+            health_msg.error_messages.push_back("Sensor data timeout");
         } else if (!current_pose_available_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 10002;
-            health_msg.error_message = "Waiting for pose data";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(10002);
+            health_msg.error_messages.push_back("Waiting for pose data");
         } else if (keyframes_.size() < min_keyframe_distance_) {
-            health_msg.status = "INITIALIZING";
-            health_msg.error_code = 10003;
-            health_msg.error_message = "Accumulating keyframes";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(10003);
+            health_msg.error_messages.push_back("Accumulating keyframes");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 35.0; // Placeholder
-        health_msg.memory_usage = 45.0; // Placeholder
-        health_msg.temperature = 50.0; // Placeholder
+        // Replace with cpu_temperature = 35.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -725,8 +725,8 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr loop_viz_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr detection_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr detection_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;

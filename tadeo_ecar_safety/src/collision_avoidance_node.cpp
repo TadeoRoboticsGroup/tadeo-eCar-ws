@@ -491,7 +491,7 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr safety_zones_pub_;
     rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr collision_prediction_pub_;
     
-    rclcpp::TimerInterface::SharedPtr safety_timer_;
+    rclcpp::TimerBase::SharedPtr safety_timer_;
     
     // Parameters
     double safety_frequency_;

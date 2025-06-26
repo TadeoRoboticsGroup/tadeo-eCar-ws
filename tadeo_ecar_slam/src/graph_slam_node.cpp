@@ -731,7 +731,7 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "graph_slam";
+        // Remove component_name field - not part of SystemHealth message
         
         // Check system health
         auto current_time = this->now();
@@ -739,26 +739,26 @@ private:
         bool odom_timeout = (current_time - last_odom_time_).seconds() > 1.0;
         
         if (scan_timeout || odom_timeout) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 8001;
-            health_msg.error_message = "Sensor data timeout";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(8001);
+            health_msg.error_messages.push_back("Sensor data timeout");
         } else if (!first_scan_received_) {
-            health_msg.status = "WAITING";
-            health_msg.error_code = 8002;
-            health_msg.error_message = "Waiting for scan data";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(8002);
+            health_msg.error_messages.push_back("Waiting for scan data");
         } else if (nodes_.size() < 2) {
-            health_msg.status = "INITIALIZING";
-            health_msg.error_code = 8003;
-            health_msg.error_message = "Building pose graph";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(8003);
+            health_msg.error_messages.push_back("Building pose graph");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 50.0; // Placeholder
-        health_msg.memory_usage = 60.0; // Placeholder
-        health_msg.temperature = 55.0; // Placeholder
+        // Replace with cpu_temperature = 50.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -795,8 +795,8 @@ private:
     
     rclcpp::Service<tadeo_ecar_interfaces::srv::SaveMap>::SharedPtr save_graph_service_;
     
-    rclcpp::TimerInterface::SharedPtr graph_optimization_timer_;
-    rclcpp::TimerInterface::SharedPtr slam_timer_;
+    rclcpp::TimerBase::SharedPtr graph_optimization_timer_;
+    rclcpp::TimerBase::SharedPtr slam_timer_;
     
     tf2_ros::TransformBroadcaster tf_broadcaster_;
     tf2_ros::Buffer tf_buffer_;

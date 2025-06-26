@@ -696,9 +696,12 @@ private:
     {
         std::lock_guard<std::mutex> lock(context_mutex_);
         
-        if (msg->component_name == "sensors") {
-            robot_context_.sensors_healthy = (msg->status == "OK");
-        }
+        // Check sensor status fields instead of component_name
+        robot_context_.sensors_healthy = 
+            (msg->lidar_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY) &&
+            (msg->camera_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY) &&
+            (msg->imu_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY) &&
+            (msg->gps_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY);
     }
     
     void executeBehaviorService(
@@ -810,33 +813,56 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "behavior_manager";
+        // Remove component_name field - not part of SystemHealth message
         
         {
             std::lock_guard<std::mutex> lock(context_mutex_);
             
             if (robot_context_.emergency_active) {
-                health_msg.status = "EMERGENCY";
-                health_msg.error_code = 19001;
-                health_msg.error_message = "Emergency state active";
+                health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::CRITICAL;
+                health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::CRITICAL;
+                health_msg.error_codes.push_back(19001);
+                health_msg.error_messages.push_back("Emergency state active");
             } else if (!tree_active_) {
-                health_msg.status = "WARNING";
-                health_msg.error_code = 19002;
-                health_msg.error_message = "Behavior tree not active";
+                health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+                health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+                health_msg.error_codes.push_back(19002);
+                health_msg.error_messages.push_back("Behavior tree not active");
             } else if (robot_context_.current_state == RobotState::UNKNOWN) {
-                health_msg.status = "ERROR";
-                health_msg.error_code = 19003;
-                health_msg.error_message = "Unknown robot state";
+                health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+                health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+                health_msg.error_codes.push_back(19003);
+                health_msg.error_messages.push_back("Unknown robot state");
             } else {
-                health_msg.status = "OK";
-                health_msg.error_code = 0;
-                health_msg.error_message = "";
+                health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+                health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
             }
         }
         
-        health_msg.cpu_usage = 5.0; // Placeholder
-        health_msg.memory_usage = 15.0; // Placeholder
-        health_msg.temperature = 38.0; // Placeholder
+        // Set proper temperature fields
+        health_msg.cpu_temperature = 38.0; // Placeholder
+        health_msg.gpu_temperature = 35.0; // Placeholder
+        health_msg.motor_temperature = 32.0; // Placeholder
+        
+        // Set other status fields
+        health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set motor status fields
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set diagnostic info and uptime
+        health_msg.diagnostic_info = "Behavior manager running";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            std::chrono::duration_cast<std::chrono::seconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count());
         
         health_pub_->publish(health_msg);
     }
@@ -1016,8 +1042,8 @@ private:
     
     rclcpp::Service<tadeo_ecar_interfaces::srv::ExecuteBehavior>::SharedPtr execute_behavior_service_;
     
-    rclcpp::TimerInterface::SharedPtr behavior_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr behavior_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
 };
 
 } // namespace tadeo_ecar_behavior

@@ -175,8 +175,9 @@ private:
     
     void systemHealthCallback(const tadeo_ecar_msgs::msg::SystemHealth::SharedPtr msg)
     {
-        // Store health information by component
-        component_health_[msg->component_name] = *msg;
+        // Store health information (use a generated component name since component_name field doesn't exist)
+        std::string component_name = "component_" + std::to_string(component_health_.size());
+        component_health_[component_name] = *msg;
         
         // Check for critical system health issues
         checkSystemHealth(*msg);
@@ -338,9 +339,20 @@ private:
     
     void checkSystemHealth(const tadeo_ecar_msgs::msg::SystemHealth& health)
     {
-        if (health.status == "ERROR" || health.status == "CRITICAL") {
-            addWarning("SYSTEM_HEALTH_" + health.component_name, 
-                       "Component health critical: " + health.component_name + " - " + health.error_message,
+        // Check various status fields for errors
+        if (health.cpu_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+            health.memory_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+            health.storage_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+            health.network_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+            health.lidar_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+            health.camera_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR) {
+            
+            std::string error_msg = "System health critical";
+            if (!health.error_messages.empty()) {
+                error_msg = health.error_messages[0];
+            }
+            addWarning("SYSTEM_HEALTH_ERROR", 
+                       "Component health critical: " + error_msg,
                        SafetyLevel::CRITICAL);
         }
     }
@@ -391,7 +403,10 @@ private:
         int total_components = component_health_.size();
         
         for (const auto& [name, health] : component_health_) {
-            if (health.status == "ERROR" || health.status == "CRITICAL") {
+            if (health.cpu_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+                health.memory_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+                health.storage_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+                health.network_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR) {
                 critical_components++;
             }
         }
@@ -507,7 +522,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr battery_health_pub_;
     
     rclcpp::Client<tadeo_ecar_interfaces::srv::EmergencyStop>::SharedPtr emergency_stop_client_;
-    rclcpp::TimerInterface::SharedPtr monitor_timer_;
+    rclcpp::TimerBase::SharedPtr monitor_timer_;
     
     // Parameters
     double monitor_frequency_;

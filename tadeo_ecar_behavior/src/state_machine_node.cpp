@@ -391,34 +391,34 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "state_machine";
+        // Remove component_name field - not part of SystemHealth message
         
         // Determinar estado de salud basado en el estado actual
         if (current_state_ == RobotState::EMERGENCY) {
-            health_msg.status = "EMERGENCY";
-            health_msg.error_code = 20001;
-            health_msg.error_message = "Robot in emergency state";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(20001);
+            health_msg.error_messages.push_back("Robot in emergency state");
         } else if (current_state_ == RobotState::RECOVERING) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 20002;
-            health_msg.error_message = "Robot recovering from failure";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(20002);
+            health_msg.error_messages.push_back("Robot recovering from failure");
         } else if (battery_level_ < critical_battery_level_) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 20003;
-            health_msg.error_message = "Critical battery level";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(20003);
+            health_msg.error_messages.push_back("Critical battery level");
         } else if (battery_level_ < low_battery_level_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 20004;
-            health_msg.error_message = "Low battery level";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(20004);
+            health_msg.error_messages.push_back("Low battery level");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            // Use appropriate status enum instead of string status
+            health_msg.error_codes.push_back(0);
+            health_msg.error_messages.push_back("");
         }
         
-        health_msg.cpu_usage = 3.0; // Placeholder
-        health_msg.memory_usage = 5.0; // Placeholder
-        health_msg.temperature = 35.0; // Placeholder
+        // Replace with cpu_temperature = 3.0; // See SystemHealth.msg // Placeholder
+        // Replace with appropriate field - memory_usage not in SystemHealth.msg // Placeholder
+        // Replace with specific temperature fields: cpu_temperature, gpu_temperature, motor_temperature // Placeholder
         
         health_pub_->publish(health_msg);
     }
@@ -523,7 +523,7 @@ private:
     rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>::SharedPtr transition_pub_;
     rclcpp_lifecycle::LifecyclePublisher<tadeo_ecar_msgs::msg::SystemHealth>::SharedPtr health_pub_;
     
-    rclcpp::TimerInterface::SharedPtr state_timer_;
+    rclcpp::TimerBase::SharedPtr state_timer_;
 };
 
 } // namespace tadeo_ecar_behavior

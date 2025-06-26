@@ -13,7 +13,7 @@
 #include <nav2_msgs/action/navigate_to_pose.hpp>
 #include <nav2_msgs/action/follow_waypoints.hpp>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
-#include <tadeo_ecar_interfaces/srv/navigate_to_goal.hpp>
+#include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
 #include <tadeo_ecar_interfaces/action/follow_path.hpp>
 #include "tadeo_ecar_navigation/navigation_types.hpp"
 #include <cmath>
@@ -591,34 +591,57 @@ private:
         health_msg.header.stamp = this->now();
         health_msg.header.frame_id = base_frame_;
         
-        health_msg.component_name = "navigation_controller";
+        // Remove component_name field - not part of SystemHealth message
         
-        // Determine health status
+        // Set appropriate status enum fields
         if (emergency_stop_active_) {
-            health_msg.status = "EMERGENCY";
-            health_msg.error_code = 15001;
-            health_msg.error_message = "Emergency stop active";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::CRITICAL;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::CRITICAL;
+            health_msg.error_codes.push_back(15001);
+            health_msg.error_messages.push_back("Emergency stop active");
         } else if (nav_status_.state == NavigationState::MISSION_FAILED) {
-            health_msg.status = "ERROR";
-            health_msg.error_code = 15002;
-            health_msg.error_message = "Mission failed";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::ERROR;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(15002);
+            health_msg.error_messages.push_back("Mission failed");
         } else if (nav_status_.state == NavigationState::RECOVERY) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 15003;
-            health_msg.error_message = "Recovery behavior active";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(15003);
+            health_msg.error_messages.push_back("Recovery behavior active");
         } else if (!current_pose_available_) {
-            health_msg.status = "WARNING";
-            health_msg.error_code = 15004;
-            health_msg.error_message = "No odometry data";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::WARNING;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.error_codes.push_back(15004);
+            health_msg.error_messages.push_back("No odometry data");
         } else {
-            health_msg.status = "OK";
-            health_msg.error_code = 0;
-            health_msg.error_message = "";
+            health_msg.cpu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+            health_msg.memory_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
         }
         
-        health_msg.cpu_usage = 25.0; // Placeholder
-        health_msg.memory_usage = 20.0; // Placeholder
-        health_msg.temperature = 40.0; // Placeholder
+        // Set proper temperature fields
+        health_msg.cpu_temperature = 40.0; // Placeholder
+        health_msg.gpu_temperature = 37.0; // Placeholder
+        health_msg.motor_temperature = 35.0; // Placeholder
+        
+        // Set other status fields
+        health_msg.storage_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.network_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.lidar_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.camera_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.imu_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.gps_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set motor status fields
+        health_msg.front_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.front_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_left_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        health_msg.rear_right_motor_status = tadeo_ecar_msgs::msg::SystemHealth::HEALTHY;
+        
+        // Set diagnostic info and uptime
+        health_msg.diagnostic_info = "Navigation controller operational";
+        health_msg.uptime_seconds = static_cast<uint64_t>(
+            (this->now() - controller_start_time_).seconds());
         
         health_pub_->publish(health_msg);
     }
@@ -756,8 +779,8 @@ private:
     rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr nav2_client_;
     rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::GoalHandle::SharedPtr nav2_goal_handle_;
     
-    rclcpp::TimerInterface::SharedPtr control_timer_;
-    rclcpp::TimerInterface::SharedPtr health_timer_;
+    rclcpp::TimerBase::SharedPtr control_timer_;
+    rclcpp::TimerBase::SharedPtr health_timer_;
     
     tf2_ros::Buffer tf_buffer_;
     tf2_ros::TransformListener tf_listener_;
