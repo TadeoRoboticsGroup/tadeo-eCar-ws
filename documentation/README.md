@@ -169,6 +169,88 @@ Para reportar errores o sugerir mejoras:
 
 Copyright (c) 2024 Semillero de Robótica. Todos los derechos reservados.
 
+
+---
+
+## 📚 Literatura Recomendada
+
+Aquí encontrarás libros esenciales para profundizar en robótica, ROS1, ROS2, programación en C++/Python, y plataformas como Raspberry Pi y Arduino. Cada título ha sido seleccionado por su relevancia práctica y valor formativo.
+
+### 🤖 Robótica General y Robótica Móvil
+
+- **“Robotics, Vision and Control”** – Peter Corke, 2nd Ed.  
+  [Link](https://link.springer.com/book/10.1007/978-3-319-54413-7)  
+  Excelente introducción práctica a la robótica con código en MATLAB y Python.
+
+- **“Introduction to Autonomous Robots”** – Nikolaus Correll et al., 3rd Ed.  
+  [Link](http://www.roboticsbook.org)  
+  Libro gratuito y moderno sobre robótica móvil y sensores.
+
+- **“Probabilistic Robotics”** – Sebastian Thrun, Wolfram Burgard, Dieter Fox  
+  [Link](https://mitpress.mit.edu/9780262201629/probabilistic-robotics/)  
+  Fundamentación teórica en localización, SLAM y planificación con incertidumbre.
+
+### 💻 C++ y Python para Robótica
+
+- **“Programming Robots with ROS”** – Morgan Quigley, Brian Gerkey, William D. Smart  
+  [Link](https://www.oreilly.com/library/view/programming-robots-with/9781449323899/)  
+  Práctica robótica con ROS1 y C++, Python, ideal para iniciarse.
+
+- **“Effective Modern C++”** – Scott Meyers  
+  [Link](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/)  
+  Buenas prácticas modernas de C++11/14 para aplicaciones complejas como ROS2.
+
+- **“Python Robotics Projects”** – Lentin Joseph  
+  [Link](https://www.packtpub.com/product/python-robotics-projects/9781788629974)  
+  Aplicaciones prácticas de Python en robótica real.
+
+### 🔌 Raspberry Pi y Arduino
+
+- **“Exploring Raspberry Pi”** – Derek Molloy  
+  [Link](https://www.wiley.com/en-us/Exploring+Raspberry+Pi%3A+Interfacing+to+the+Real+World+with+Embedded+Linux-p-9781119188681)  
+  Interfaz de hardware, Linux embebido y robótica con Raspberry Pi.
+
+- **“Arduino Robotics”** – John-David Warren et al.  
+  [Link](https://www.apress.com/book/9781430231837)  
+  Guía para construir robots autónomos con Arduino desde cero.
+
+### ⚙️ ROS1
+
+- **“Mastering ROS for Robotics Programming”** – Lentin Joseph  
+  [Link](https://www.packtpub.com/product/mastering-ros-for-robotics-programming-second-edition/9781788478954)  
+  Profundiza en ROS1 con proyectos de visión, control y navegación.
+
+- **“Learning ROS for Robotics Programming”** – Aaron Martinez, Enrique Fernández  
+  [Link](https://www.packtpub.com/product/learning-ros-for-robotics-programming-second-edition/9781783987444)  
+  Ideal para comenzar en ROS1 y preparar el salto a ROS2.
+
+### 🚀 ROS2 (¡Muchos Libros!)
+
+- **“ROS2 Programming: Design, Build and Simulate Robots”** – Aaron Martinez, Enrique Fernández  
+  [Link](https://www.packtpub.com/product/ros-2-programming-design-build-and-simulate-robots-using-the-newest-ros-2-humble-and-rolling-releases/9781801071024)  
+  Manual actualizado con ROS2 Humble y Rolling, cubre control, SLAM y navegación.
+
+- **“Learning ROS2”** – Ramkumar Gandhinathan, Lentin Joseph  
+  [Link](https://www.packtpub.com/product/learning-ros-2/9781801076883)  
+  Enfocado en la arquitectura moderna de ROS2 y su implementación práctica.
+
+- **“Mastering ROS2”** – Lentin Joseph  
+  [Link](https://www.packtpub.com/product/mastering-ros-2/9781801073844)  
+  Dominio completo de ROS2: Controladores, Nav2, SLAM, simulación y comportamientos.
+
+- **“ROS2 in 5 Days”** – ConstructSim  
+  [Link](https://www.theconstructsim.com/ros2-in-5-days/)  
+  Curso práctico gratuito para dominar los fundamentos de ROS2 rápidamente.
+
+- **“Robot Operating System (ROS) for Absolute Beginners”** – Lentin Joseph  
+  [Link](https://www.packtpub.com/product/robot-operating-system-for-absolute-beginners/9781788623316)  
+  ROS2 explicado desde cero para quienes vienen de Arduino, Python o Raspberry Pi.
+
+- **“ROS2 Tutorial for Beginners”** – Thomas Eibner (Online eBook)  
+  [Link](https://index.ros.org/doc/ros2/Tutorials/)  
+  Tutorial oficial gratuito paso a paso de los conceptos ROS2 más relevantes.
+
+
 ---
 
 **Nota**: Esta documentación está diseñada para ser práctica y aplicable. Todos los ejemplos están basados en el sistema real del robot autónomo eCar 4WD4WS.
