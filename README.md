@@ -1,8 +1,11 @@
-# 🤖 Robot Autónomo eCar 4WD4WS
 
-## 🚀 **La Revolución Robótica Empieza Aquí**
 
-**ʙɪᴇɴᴠᴇɴɪᴅᴏꜱ ᴀʟ ꜱᴇᴍɪʟʟᴇʀᴏ ᴅᴇ ʀᴏʙÓᴛɪᴄᴀ** 💻💖☕
+<div align="center">
+
+# 🤖 Robot Autónomo Tadeo eCar 4WD4WS
+
+<img src="/src/documentation/images/portada.png" width="300"/>
+</div>
 
 > Plataforma robótica autónoma para logística universitaria en interiores. Robot eléctrico omnidireccional 4WD 4WS con capacidades de navegación autónoma, SLAM, visión computacional y planificación de trayectorias usando ROS2 Humble. Diseñado para transporte de materiales en ambientes universitarios.
 
@@ -233,6 +236,11 @@ source install/setup.bash
 # Sistema completo en simulación
 ./src/tadeo_ecar_bringup/scripts/start_system.sh sim
 ```
+
+<div align="center">
+
+<img src="/src/documentation/images/gazebo_sim.jpg" width="100%"/>
+</div>
 
 #### 🤖 **Modo Hardware Real**
 ```bash
