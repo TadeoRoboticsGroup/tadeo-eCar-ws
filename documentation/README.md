@@ -102,7 +102,7 @@ Esta documentación te llevará desde los conceptos básicos de ROS2 hasta el de
 - Emergency stop
 - Safety multicapa del eCar
 
-**[16. Integración de Sistemas](16-integracion/README.md)**
+**[16. Integración de Sistemas](16-integration/README.md)**
 - Arquitectura de sistemas complejos
 - Lifecycle management
 - Error handling
