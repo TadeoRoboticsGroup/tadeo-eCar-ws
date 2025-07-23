@@ -225,23 +225,23 @@ private:
     void createPublishers()
     {
         // Publicador de estado de comportamientos
-        behavior_status_pub_ = this->create_lifecycle_publisher<std_msgs::msg::String>(
+        behavior_status_pub_ = this->create_publisher<std_msgs::msg::String>(
             "behavior_status", 10);
         
         // Publicador de estado del robot
-        robot_state_pub_ = this->create_lifecycle_publisher<std_msgs::msg::String>(
+        robot_state_pub_ = this->create_publisher<std_msgs::msg::String>(
             "robot_state", 10);
         
         // Publicador de métricas de comportamientos
-        behavior_metrics_pub_ = this->create_lifecycle_publisher<std_msgs::msg::String>(
+        behavior_metrics_pub_ = this->create_publisher<std_msgs::msg::String>(
             "behavior_metrics", 10);
         
         // Publicador de visualización
-        behavior_viz_pub_ = this->create_lifecycle_publisher<visualization_msgs::msg::MarkerArray>(
+        behavior_viz_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
             "behavior_visualization", 10);
         
         // Publicador de salud
-        health_pub_ = this->create_lifecycle_publisher<tadeo_ecar_msgs::msg::SystemHealth>(
+        health_pub_ = this->create_publisher<tadeo_ecar_msgs::msg::SystemHealth>(
             "behavior/manager_health", 10);
     }
     
@@ -398,7 +398,7 @@ private:
     {
         if (!current_tree_) return;
         
-        auto& blackboard = current_tree_->blackboard;
+        auto blackboard = current_tree_->rootBlackboard();
         
         std::lock_guard<std::mutex> lock(context_mutex_);
         
@@ -712,12 +712,18 @@ private:
             BehaviorCommand command;
             command.command_type = "start_tree";
             command.tree_name = request->behavior_name;
-            command.priority = stringToBehaviorPriority(request->priority);
+            command.priority = BehaviorPriority::NORMAL; // Default priority
             command.timestamp = this->now();
             
             // Agregar parámetros si los hay
             for (const auto& param : request->parameters) {
-                command.parameters[param.key] = param.value;
+                // Simple key=value parsing
+                size_t eq_pos = param.find('=');
+                if (eq_pos != std::string::npos) {
+                    std::string key = param.substr(0, eq_pos);
+                    std::string value = param.substr(eq_pos + 1);
+                    command.parameters[key] = value;
+                }
             }
             
             // Procesar comando
@@ -935,6 +941,10 @@ private:
         CheckEmergencyCondition(const std::string& name, const BT::NodeConfiguration& config)
             : BT::ConditionNode(name, config) {}
         
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override {
             bool emergency_active;
             if (getInput("emergency_active", emergency_active)) {
@@ -950,6 +960,11 @@ private:
     public:
         ExecutePatrolAction(const std::string& name, const BT::NodeConfiguration& config)
             : BT::SyncActionNode(name, config) {}
+        
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override { return BT::NodeStatus::SUCCESS; }
     };
     
@@ -958,6 +973,11 @@ private:
     public:
         DockingAction(const std::string& name, const BT::NodeConfiguration& config)
             : BT::SyncActionNode(name, config) {}
+        
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override { return BT::NodeStatus::SUCCESS; }
     };
     
@@ -966,6 +986,11 @@ private:
     public:
         ExplorationAction(const std::string& name, const BT::NodeConfiguration& config)
             : BT::SyncActionNode(name, config) {}
+        
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override { return BT::NodeStatus::SUCCESS; }
     };
     
@@ -974,6 +999,11 @@ private:
     public:
         RecoveryAction(const std::string& name, const BT::NodeConfiguration& config)
             : BT::SyncActionNode(name, config) {}
+        
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override { return BT::NodeStatus::SUCCESS; }
     };
     
@@ -982,6 +1012,11 @@ private:
     public:
         WaitAction(const std::string& name, const BT::NodeConfiguration& config)
             : BT::SyncActionNode(name, config) {}
+        
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override { return BT::NodeStatus::SUCCESS; }
     };
     
@@ -990,6 +1025,11 @@ private:
     public:
         SendAlertAction(const std::string& name, const BT::NodeConfiguration& config)
             : BT::SyncActionNode(name, config) {}
+        
+        static BT::PortsList providedPorts() {
+            return {};
+        }
+        
         BT::NodeStatus tick() override { return BT::NodeStatus::SUCCESS; }
     };
     

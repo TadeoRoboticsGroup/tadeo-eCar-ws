@@ -1,0 +1,127 @@
+version: '3.8'
+
+services:
+  ros2_humble:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ${IMAGE_NAME:-ros2_humble_custom}
+    container_name: ${CONTAINER_NAME:-ros2_humble}
+    privileged: true
+    #network_mode: host  # ACTIVADO para comunicación ROS2 WSL ↔ Container
+    ports:
+      - "${ROS2_DDS_PORTS:-7400-7500}:7400-7500/udp"
+      - "${GAZEBO_MASTER_PORT:-11345}:11345/tcp"
+      - "${GAZEBO_TRANSPORT_PORT:-11346}:11346/tcp"
+      - "${CODE_SERVER_PORT:-8080}:8080"
+      - "${WEB_APP_PORT:-8000}:8000"
+    environment:
+      # Display y X11 (CORREGIDO)
+      - DISPLAY=:0
+      - QT_X11_NO_MITSHM=1
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+      
+      # OpenGL y renderizado (CORREGIDO)
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - MESA_GL_VERSION_OVERRIDE=4.5
+      - MESA_GLSL_VERSION_OVERRIDE=450
+      - GALLIUM_DRIVER=llvmpipe
+      - MESA_LOADER_DRIVER_OVERRIDE=llvmpipe
+      - LIBGL_ALWAYS_INDIRECT=0
+      
+      # ROS2 configuration (OPTIMIZADO WSL ↔ Container)
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-42}
+      - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION:-rmw_fastrtps_cpp}
+      - ROS_LOCALHOST_ONLY=0
+      - FASTRTPS_DEFAULT_PROFILES_FILE=/etc/fastdds_profiles.xml
+      
+      # Gazebo Ignition Fortress (v6)
+      - IGN_GAZEBO_SYSTEM_PLUGIN_PATH=/usr/lib/x86_64-linux-gnu/ign-gazebo-6/plugins
+      - IGN_GUI_PLUGIN_PATH=/usr/lib/x86_64-linux-gnu/ign-gui-6/plugins
+      - IGN_GAZEBO_HEADLESS_RENDERING=${IGN_GAZEBO_HEADLESS_RENDERING:-1}
+      - IGN_GAZEBO_SERVER_CONFIG_PATH=/usr/share/ignition/ignition-gazebo6
+      
+      # Audio y accesibilidad
+      - NO_AT_BRIDGE=1
+      - QT_ACCESSIBILITY=1
+      - PULSE_RUNTIME_PATH=/tmp/pulse-runtime
+      
+      # Usuario
+      - USER=rosuser
+      - HOME=/home/rosuser
+      
+    volumes:
+      # X11 y display optimizado para WSL
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${HOST_HOME}/.Xauthority:/home/rosuser/.Xauthority:rw
+      - /mnt/wslg:/mnt/wslg:rw
+      
+      # Workspaces
+      - ${TADEO_ECAR_WS_PATH}:/home/rosuser/tadeo-eCar-ws:rw
+      - ${PROJECTS_PATH}:/home/rosuser/projects:rw
+      - ros2_workspace:/home/rosuser/ros2_ws
+      
+      # Hardware access completo (MEJORADO)
+      - /dev:/dev:rw
+      - /sys:/sys:rw
+      - /run/udev:/run/udev:ro
+      
+      # Gazebo cache (CORREGIDO - crear directorios con permisos)
+      - gazebo_cache:/home/rosuser/.ignition:rw
+      
+      # Audio (opcional)
+      - ${PULSE_PATH:-/run/user/1000/pulse}:/tmp/pulse-runtime:ro
+      
+      # Shared memory
+      - /dev/shm:/dev/shm
+      
+    devices:
+      # GPU access completo
+      - /dev/dri:/dev/dri
+      
+      # USB completo para comunicación serial
+      - /dev/bus/usb:/dev/bus/usb
+      
+      # Cámaras del laptop
+      - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+      
+    # Configuraciones adicionales de seguridad (AMPLIADAS)
+    cap_add:
+      - SYS_PTRACE
+      - NET_ADMIN
+      - SYS_ADMIN  # Para GPU access
+      
+    # Límites de recursos
+    deploy:
+      resources:
+        limits:
+          memory: ${MEMORY_LIMIT:-8G}
+          cpus: ${CPU_LIMIT:-4.0}
+        reservations:
+          memory: ${MEMORY_RESERVATION:-2G}
+          cpus: ${CPU_RESERVATION:-1.0}
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "ros2", "node", "list"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    # Usuario con grupo video para GPU access
+    user: "${USER_UID:-1000}:${USER_GID:-1000}"
+    group_add:
+      - video
+      - render
+    
+    command: bash
+    stdin_open: true
+    tty: true
+
+volumes:
+  gazebo_cache:
+    driver: local
+  ros2_workspace:
+    driver: local

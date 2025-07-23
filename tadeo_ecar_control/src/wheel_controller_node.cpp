@@ -301,25 +301,25 @@ void WheelController::publishWheelStates()
     wheel_states_msg.header.stamp = this->now();
     wheel_states_msg.header.frame_id = "base_link";
     
-    wheel_states_msg.fl_velocity = current_wheel_velocities_["fl"];
-    wheel_states_msg.fr_velocity = current_wheel_velocities_["fr"];
-    wheel_states_msg.rl_velocity = current_wheel_velocities_["rl"];
-    wheel_states_msg.rr_velocity = current_wheel_velocities_["rr"];
+    wheel_states_msg.front_left_velocity = current_wheel_velocities_["fl"];
+    wheel_states_msg.front_right_velocity = current_wheel_velocities_["fr"];
+    wheel_states_msg.rear_left_velocity = current_wheel_velocities_["rl"];
+    wheel_states_msg.rear_right_velocity = current_wheel_velocities_["rr"];
     
-    wheel_states_msg.fl_steering_angle = current_wheel_angles_["fl"];
-    wheel_states_msg.fr_steering_angle = current_wheel_angles_["fr"];
-    wheel_states_msg.rl_steering_angle = current_wheel_angles_["rl"];
-    wheel_states_msg.rr_steering_angle = current_wheel_angles_["rr"];
+    wheel_states_msg.front_left_steering = current_wheel_angles_["fl"];
+    wheel_states_msg.front_right_steering = current_wheel_angles_["fr"];
+    wheel_states_msg.rear_left_steering = current_wheel_angles_["rl"];
+    wheel_states_msg.rear_right_steering = current_wheel_angles_["rr"];
     
     // Calculate slip detection (simplified)
     for (const auto& [name, config] : wheel_configs_) {
         double velocity_error = std::abs(target_wheel_velocities_[name] - current_wheel_velocities_[name]);
         double slip_threshold = 0.5; // m/s
         
-        if (name == "fl") wheel_states_msg.fl_slip_detected = velocity_error > slip_threshold;
-        else if (name == "fr") wheel_states_msg.fr_slip_detected = velocity_error > slip_threshold;
-        else if (name == "rl") wheel_states_msg.rl_slip_detected = velocity_error > slip_threshold;
-        else if (name == "rr") wheel_states_msg.rr_slip_detected = velocity_error > slip_threshold;
+        if (name == "fl") wheel_states_msg.front_left_slip = velocity_error > slip_threshold;
+        else if (name == "fr") wheel_states_msg.front_right_slip = velocity_error > slip_threshold;
+        else if (name == "rl") wheel_states_msg.rear_left_slip = velocity_error > slip_threshold;
+        else if (name == "rr") wheel_states_msg.rear_right_slip = velocity_error > slip_threshold;
     }
     
     wheel_states_pub_->publish(wheel_states_msg);

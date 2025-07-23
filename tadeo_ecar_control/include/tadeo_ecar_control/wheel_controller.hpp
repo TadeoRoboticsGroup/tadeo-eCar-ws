@@ -69,7 +69,7 @@ private:
     rclcpp::Publisher<std_msgs::msg::Float64>::SharedPtr rr_steering_pub_;
     rclcpp::Publisher<tadeo_ecar_msgs::msg::WheelStates>::SharedPtr wheel_states_pub_;
     rclcpp::Service<tadeo_ecar_interfaces::srv::CalibrateWheels>::SharedPtr calibrate_service_;
-    rclcpp::TimerInterface::SharedPtr control_timer_;
+    rclcpp::TimerBase::SharedPtr control_timer_;
     
     // Robot parameters
     double wheelbase_;

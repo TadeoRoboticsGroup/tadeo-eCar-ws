@@ -1,6 +1,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
-#include <nav_msgs/msg/get_map.hpp>
+#include <nav_msgs/srv/get_map.hpp>
 #include <geometry_msgs/msg/pose_with_covariance_stamped.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <std_msgs/msg/header.hpp>
@@ -16,6 +16,8 @@
 #include <cmath>
 #include <algorithm>
 #include <memory>
+#include <queue>
+#include <utility>
 
 namespace tadeo_ecar_slam
 {
@@ -304,7 +306,7 @@ private:
                     while (!queue.empty()) {
                         auto [cx, cy] = queue.front();
                         queue.pop();
-                        component.push_back({cx, cy});
+                        component.push_back(std::make_pair(cx, cy));
                         
                         // Check 4-connected neighbors
                         int dx[] = {-1, 1, 0, 0};
@@ -456,8 +458,8 @@ private:
     
     std::string generateMapFilename(const rclcpp::Time& timestamp)
     {
-        auto time_t = timestamp.seconds();
-        auto tm = *std::localtime(&time_t);
+        auto time_t_val = static_cast<time_t>(timestamp.seconds());
+        auto tm = *std::localtime(&time_t_val);
         
         std::ostringstream oss;
         oss << map_storage_path_ << "map_" 
@@ -660,8 +662,8 @@ private:
                 return;
             }
             
-            std::string full_path = map_storage_path_ + request->filename;
-            if (!full_path.ends_with(".yaml")) {
+            std::string full_path = map_storage_path_ + request->map_name;
+            if (full_path.length() < 5 || full_path.substr(full_path.length() - 5) != ".yaml") {
                 full_path += ".yaml";
             }
             
@@ -684,8 +686,8 @@ private:
         std::shared_ptr<tadeo_ecar_interfaces::srv::SaveMap::Response> response)
     {
         try {
-            std::string full_path = map_storage_path_ + request->filename;
-            if (!full_path.ends_with(".yaml")) {
+            std::string full_path = map_storage_path_ + request->map_name;
+            if (full_path.length() < 5 || full_path.substr(full_path.length() - 5) != ".yaml") {
                 full_path += ".yaml";
             }
             

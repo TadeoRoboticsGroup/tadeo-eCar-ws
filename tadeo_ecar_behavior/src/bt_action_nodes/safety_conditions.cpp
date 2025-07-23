@@ -129,14 +129,14 @@ public:
         laser_health_sub_ = node_->create_subscription<tadeo_ecar_msgs::msg::SystemHealth>(
             "perception/laser_health", 10,
             [this](const tadeo_ecar_msgs::msg::SystemHealth::SharedPtr msg) {
-                laser_healthy_ = (msg->status == "OK");
+                laser_healthy_ = (msg->lidar_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY);
                 last_laser_update_ = node_->get_clock()->now();
             });
             
         camera_health_sub_ = node_->create_subscription<tadeo_ecar_msgs::msg::SystemHealth>(
             "perception/camera_health", 10,
             [this](const tadeo_ecar_msgs::msg::SystemHealth::SharedPtr msg) {
-                camera_healthy_ = (msg->status == "OK");
+                camera_healthy_ = (msg->camera_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY);
                 last_camera_update_ = node_->get_clock()->now();
             });
     }
@@ -200,7 +200,7 @@ public:
         nav_health_sub_ = node_->create_subscription<tadeo_ecar_msgs::msg::SystemHealth>(
             "navigation/controller_health", 10,
             [this](const tadeo_ecar_msgs::msg::SystemHealth::SharedPtr msg) {
-                navigation_healthy_ = (msg->status == "OK");
+                navigation_healthy_ = (msg->cpu_status == tadeo_ecar_msgs::msg::SystemHealth::HEALTHY);
                 last_nav_update_ = node_->get_clock()->now();
             });
             

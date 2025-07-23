@@ -1,0 +1,27 @@
+Para compilar sin errores de memoria:
+
+  # Compilar sin los paquetes problemáticos:
+  colcon build --packages-skip tadeo_ecar_perception tadeo_ecar_navigation
+  --parallel-workers 1
+
+  # O compilar todo con menos paralelismo:
+  colcon build --parallel-workers 1 --executor sequential
+
+  # Compilar solo description:
+  colcon build --packages-select tadeo_ecar_description
+
+--------------------------------------
+
+    # Compilar solo paquetes básicos primero:
+  colcon build --packages-select tadeo_ecar_config tadeo_ecar_description
+  tadeo_ecar_msgs tadeo_ecar_interfaces
+
+  # Después compilar de uno en uno:
+  colcon build --packages-select tadeo_ecar_control
+  colcon build --packages-select tadeo_ecar_localization
+  colcon build --packages-select tadeo_ecar_behavior
+
+  # O intentar sin los más problemáticos:
+  colcon build --packages-skip tadeo_ecar_perception tadeo_ecar_navigation
+  tadeo_ecar_localization
+

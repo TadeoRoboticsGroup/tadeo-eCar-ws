@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <geometry_msgs/msg/point.hpp>
 
 namespace tadeo_ecar_safety
 {

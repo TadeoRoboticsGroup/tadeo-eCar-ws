@@ -2,8 +2,13 @@ cmake_minimum_required(VERSION 3.8)
 project(tadeo_ecar_control)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic -O1 -fno-exceptions)
 endif()
+
+# Reduce memory usage during compilation
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -fno-rtti -pipe")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -pipe")
+set(CMAKE_BUILD_PARALLEL_LEVEL 1)
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)

@@ -2,6 +2,7 @@
 #include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/int32.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/point_stamped.hpp>
 #include <nav_msgs/msg/path.hpp>
 #include <visualization_msgs/msg/marker_array.hpp>
 #include <visualization_msgs/msg/interactive_marker.hpp>
@@ -9,6 +10,7 @@
 #include <tf2_ros/buffer.h>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
 #include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
+#include <tadeo_ecar_interfaces/srv/navigate_to_goal.hpp>
 #include "tadeo_ecar_navigation/navigation_types.hpp"
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -16,6 +18,7 @@
 #include <algorithm>
 #include <memory>
 #include <chrono>
+#include <rcpputils/filesystem_helper.hpp>
 
 namespace tadeo_ecar_navigation
 {
@@ -102,7 +105,7 @@ private:
         
         // Create storage directory
         try {
-            std::filesystem::create_directories(waypoint_storage_path_);
+            rcpputils::fs::create_directories(waypoint_storage_path_);
         } catch (const std::exception& e) {
             RCLCPP_ERROR(this->get_logger(), "Failed to create waypoint storage directory: %s", e.what());
         }
@@ -358,7 +361,7 @@ private:
             std::string filename = waypoint_storage_path_ + "mission_" + 
                                    std::to_string(mission_id) + ".yaml";
             
-            if (!std::filesystem::exists(filename)) {
+            if (!rcpputils::fs::exists(filename)) {
                 RCLCPP_ERROR(this->get_logger(), "Mission file not found: %s", filename.c_str());
                 return;
             }
@@ -445,7 +448,7 @@ private:
         try {
             std::string filename = waypoint_storage_path_ + "autosave_waypoints.yaml";
             
-            if (std::filesystem::exists(filename)) {
+            if (rcpputils::fs::exists(filename)) {
                 YAML::Node waypoints_node = YAML::LoadFile(filename);
                 
                 if (waypoints_node["waypoints"]) {

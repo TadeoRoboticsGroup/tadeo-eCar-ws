@@ -771,10 +771,10 @@ private:
             // In a real implementation, you would save the pose graph to file
             // For now, just report success
             response->success = true;
-            response->message = "Pose graph saved to " + request->filename;
+            response->message = "Pose graph saved to " + request->map_name;
             
             RCLCPP_INFO(this->get_logger(), "Graph save requested: %s (nodes: %zu, edges: %zu)",
-                        request->filename.c_str(), nodes_.size(), edges_.size());
+                        request->map_name.c_str(), nodes_.size(), edges_.size());
         } catch (const std::exception& e) {
             response->success = false;
             response->message = "Failed to save graph: " + std::string(e.what());

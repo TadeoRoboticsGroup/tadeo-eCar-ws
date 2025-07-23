@@ -17,7 +17,7 @@
       <visual>
         <origin xyz="0 0 ${suspension_z_offset}" rpy="0 ${pi} ${suspension_rotation}"/>
         <geometry>
-          <!-- CORREGIDO: usar file:// con path absoluto -->
+          <!-- NO QUITAR STL - requerido por el usuario -->
           <mesh filename="package://tadeo_ecar_description/meshes/suspension/suspension.stl" scale="1 1 1"/>
         </geometry>
         <material name="gray"/>
@@ -26,7 +26,8 @@
       <collision>
         <origin xyz="0 0 ${suspension_z_offset}" rpy="0 ${pi} ${suspension_rotation}"/>
         <geometry>
-         <mesh filename="package://tadeo_ecar_description/meshes/suspension/suspension.stl" scale="1 1 1"/>
+          <!-- NO QUITAR STL - requerido por el usuario -->
+          <mesh filename="package://tadeo_ecar_description/meshes/suspension/suspension.stl" scale="1 1 1"/>
         </geometry>
       </collision>
       
@@ -52,7 +53,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
         <geometry>
-          <!-- CORREGIDO: usar file:// con path absoluto -->
+          <!-- NO QUITAR STL - requerido por el usuario -->
           <mesh filename="package://tadeo_ecar_description/meshes/wheels/wheel.stl" scale="1 1 1"/>
         </geometry>
         <material name="black"/>
@@ -61,6 +62,7 @@
       <collision>
         <origin xyz="0 0 0" rpy="${pi/2} 0 0"/>
         <geometry>
+          <!-- NO QUITAR STL - requerido por el usuario -->
           <mesh filename="package://tadeo_ecar_description/meshes/wheels/wheel.stl" scale="1 1 1"/>
         </geometry>
       </collision>

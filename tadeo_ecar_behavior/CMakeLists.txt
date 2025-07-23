@@ -2,8 +2,17 @@ cmake_minimum_required(VERSION 3.8)
 project(tadeo_ecar_behavior)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+  add_compile_options(-Wall -Wextra -Wpedantic -O1 -fno-exceptions)
 endif()
+
+# Set C++17 standard and disable tracetools for compatibility
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Reduce memory usage during compilation
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g0 -fno-rtti -pipe -DTRACETOOLS_DISABLED")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g0 -pipe")
+set(CMAKE_BUILD_PARALLEL_LEVEL 1)
 
 # Find dependencies
 find_package(ament_cmake REQUIRED)
@@ -26,6 +35,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(eigen3_cmake_module REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(tadeo_ecar_msgs REQUIRED)
 find_package(tadeo_ecar_interfaces REQUIRED)
 find_package(yaml-cpp REQUIRED)
@@ -71,6 +81,7 @@ ament_target_dependencies(tadeo_bt_nodes
   rclcpp
   rclcpp_action
   std_msgs
+  std_srvs
   geometry_msgs
   nav_msgs
   sensor_msgs
@@ -155,15 +166,15 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
   
-  # Add unit tests
-  find_package(ament_cmake_gtest REQUIRED)
-  
-  ament_add_gtest(test_behavior_types test/test_behavior_types.cpp)
-  ament_target_dependencies(test_behavior_types rclcpp)
-  
-  ament_add_gtest(test_behavior_manager test/test_behavior_manager.cpp)
-  ament_target_dependencies(test_behavior_manager rclcpp behaviortree_cpp_v3)
-  target_link_libraries(test_behavior_manager tadeo_bt_nodes)
+  # Unit tests commented out - test files not yet implemented
+  # find_package(ament_cmake_gtest REQUIRED)
+  # 
+  # ament_add_gtest(test_behavior_types test/test_behavior_types.cpp)
+  # ament_target_dependencies(test_behavior_types rclcpp)
+  # 
+  # ament_add_gtest(test_behavior_manager test/test_behavior_manager.cpp)
+  # ament_target_dependencies(test_behavior_manager rclcpp behaviortree_cpp_v3)
+  # target_link_libraries(test_behavior_manager tadeo_bt_nodes)
 endif()
 
 ament_package()

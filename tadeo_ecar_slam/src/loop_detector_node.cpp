@@ -21,6 +21,7 @@
 #include <algorithm>
 #include <memory>
 #include <unordered_map>
+#include <random>
 
 namespace tadeo_ecar_slam
 {

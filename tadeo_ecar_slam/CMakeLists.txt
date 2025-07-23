@@ -18,6 +18,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(PCL REQUIRED)
 find_package(pcl_conversions REQUIRED)
+find_package(visualization_msgs REQUIRED)
 find_package(tadeo_ecar_msgs REQUIRED)
 find_package(tadeo_ecar_interfaces REQUIRED)
 
@@ -37,6 +38,7 @@ ament_target_dependencies(grid_slam_node
   tf2
   tf2_ros
   tf2_geometry_msgs
+  visualization_msgs
   Eigen3
   tadeo_ecar_msgs
   tadeo_ecar_interfaces
@@ -53,6 +55,7 @@ ament_target_dependencies(graph_slam_node
   tf2
   tf2_ros
   tf2_geometry_msgs
+  visualization_msgs
   Eigen3
   PCL
   pcl_conversions
@@ -72,6 +75,7 @@ ament_target_dependencies(map_manager_node
   tf2
   tf2_ros
   tf2_geometry_msgs
+  visualization_msgs
   tadeo_ecar_msgs
   tadeo_ecar_interfaces
 )
@@ -84,6 +88,7 @@ ament_target_dependencies(loop_detector_node
   sensor_msgs
   geometry_msgs
   nav_msgs
+  visualization_msgs
   tf2
   tf2_ros
   tf2_geometry_msgs

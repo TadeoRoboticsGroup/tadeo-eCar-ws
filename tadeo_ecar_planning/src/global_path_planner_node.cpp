@@ -8,7 +8,7 @@
 #include <tf2_ros/buffer.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <tadeo_ecar_msgs/msg/system_health.hpp>
-#include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
+#include <tadeo_ecar_interfaces/srv/navigate_to_goal.hpp>
 #include "tadeo_ecar_planning/planning_types.hpp"
 #include <ompl/base/SpaceInformation.h>
 #include <ompl/base/spaces/SE2StateSpace.h>
@@ -554,6 +554,8 @@ private:
                 }
                 
                 response->path = ros_path;
+                response->path_length = current_path_.total_length;
+                response->estimated_time = current_path_.total_length / 0.5; // Assume 0.5 m/s speed
             } else {
                 response->success = false;
                 response->message = "Failed to plan path";

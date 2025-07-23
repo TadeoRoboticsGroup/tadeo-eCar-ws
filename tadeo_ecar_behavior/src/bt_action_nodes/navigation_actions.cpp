@@ -4,7 +4,7 @@
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 #include <std_srvs/srv/empty.hpp>
-#include <nav2_msgs/action/navigate_to_pose.hpp>
+#include <tadeo_ecar_interfaces/action/navigate_to_goal.hpp>
 #include "tadeo_ecar_behavior/behavior_types.hpp"
 #include <cmath>
 
@@ -19,8 +19,8 @@ public:
         : BT::AsyncActionNode(name, config)
     {
         node_ = rclcpp::Node::make_shared("navigate_to_goal_bt_node");
-        action_client_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(
-            node_, "navigate_to_pose");
+        action_client_ = rclcpp_action::create_client<tadeo_ecar_interfaces::action::NavigateToGoal>(
+            node_, "navigate_to_goal");
     }
 
     static BT::PortsList providedPorts()
@@ -52,20 +52,26 @@ public:
         getInput("goal_theta", goal_theta);
         getInput("timeout", timeout);
 
-        auto goal_msg = nav2_msgs::action::NavigateToPose::Goal();
-        goal_msg.pose.header.frame_id = "map";
-        goal_msg.pose.header.stamp = node_->get_clock()->now();
-        goal_msg.pose.pose.position.x = goal_x;
-        goal_msg.pose.pose.position.y = goal_y;
-        goal_msg.pose.pose.position.z = 0.0;
+        auto goal_msg = tadeo_ecar_interfaces::action::NavigateToGoal::Goal();
+        goal_msg.target_pose.header.frame_id = "map";
+        goal_msg.target_pose.header.stamp = node_->get_clock()->now();
+        goal_msg.target_pose.pose.position.x = goal_x;
+        goal_msg.target_pose.pose.position.y = goal_y;
+        goal_msg.target_pose.pose.position.z = 0.0;
         
         // Convert theta to quaternion
-        goal_msg.pose.pose.orientation.x = 0.0;
-        goal_msg.pose.pose.orientation.y = 0.0;
-        goal_msg.pose.pose.orientation.z = sin(goal_theta / 2.0);
-        goal_msg.pose.pose.orientation.w = cos(goal_theta / 2.0);
+        goal_msg.target_pose.pose.orientation.x = 0.0;
+        goal_msg.target_pose.pose.orientation.y = 0.0;
+        goal_msg.target_pose.pose.orientation.z = sin(goal_theta / 2.0);
+        goal_msg.target_pose.pose.orientation.w = cos(goal_theta / 2.0);
+        
+        // Set default parameters
+        goal_msg.tolerance_distance = 0.2;
+        goal_msg.tolerance_angle = 0.1;
+        goal_msg.max_speed = 1.0;
+        goal_msg.use_obstacle_avoidance = true;
 
-        auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SendGoalOptions();
+        auto send_goal_options = rclcpp_action::Client<tadeo_ecar_interfaces::action::NavigateToGoal>::SendGoalOptions();
         send_goal_options.result_callback = [this](const auto& result) {
             if (result.code == rclcpp_action::ResultCode::SUCCEEDED) {
                 navigation_result_ = "Navigation succeeded";
@@ -96,8 +102,8 @@ public:
 
 private:
     rclcpp::Node::SharedPtr node_;
-    rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr action_client_;
-    std::shared_future<rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::GoalHandle::SharedPtr> goal_handle_future_;
+    rclcpp_action::Client<tadeo_ecar_interfaces::action::NavigateToGoal>::SharedPtr action_client_;
+    std::shared_future<rclcpp_action::Client<tadeo_ecar_interfaces::action::NavigateToGoal>::GoalHandle::SharedPtr> goal_handle_future_;
     bool navigation_complete_ = false;
     bool navigation_success_ = false;
     std::string navigation_result_;
@@ -112,8 +118,8 @@ public:
         : BT::AsyncActionNode(name, config)
     {
         node_ = rclcpp::Node::make_shared("navigate_to_waypoint_bt_node");
-        action_client_ = rclcpp_action::create_client<nav2_msgs::action::NavigateToPose>(
-            node_, "navigate_to_pose");
+        action_client_ = rclcpp_action::create_client<tadeo_ecar_interfaces::action::NavigateToGoal>(
+            node_, "navigate_to_goal");
     }
 
     static BT::PortsList providedPorts()
@@ -138,7 +144,7 @@ public:
 
 private:
     rclcpp::Node::SharedPtr node_;
-    rclcpp_action::Client<nav2_msgs::action::NavigateToPose>::SharedPtr action_client_;
+    rclcpp_action::Client<tadeo_ecar_interfaces::action::NavigateToGoal>::SharedPtr action_client_;
 };
 
 // Acción para limpiar costmaps

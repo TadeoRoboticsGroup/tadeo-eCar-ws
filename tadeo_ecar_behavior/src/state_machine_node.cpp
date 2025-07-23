@@ -114,9 +114,9 @@ private:
     
     void createPublishers()
     {
-        state_pub_ = this->create_lifecycle_publisher<std_msgs::msg::String>("robot_state", 10);
-        transition_pub_ = this->create_lifecycle_publisher<std_msgs::msg::String>("state_transitions", 10);
-        health_pub_ = this->create_lifecycle_publisher<tadeo_ecar_msgs::msg::SystemHealth>("behavior/state_health", 10);
+        state_pub_ = this->create_publisher<std_msgs::msg::String>("robot_state", 10);
+        transition_pub_ = this->create_publisher<std_msgs::msg::String>("state_transitions", 10);
+        health_pub_ = this->create_publisher<tadeo_ecar_msgs::msg::SystemHealth>("behavior/state_health", 10);
     }
     
     void initializeStateMachine()

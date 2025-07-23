@@ -114,12 +114,12 @@ private:
         current_wheel_states_ = *msg;
         
         // Calculate actual vehicle velocity from wheel states
-        double avg_wheel_velocity = (msg->fl_velocity + msg->fr_velocity + 
-                                     msg->rl_velocity + msg->rr_velocity) / 4.0;
+        double avg_wheel_velocity = (msg->front_left_velocity + msg->front_right_velocity + 
+                                     msg->rear_left_velocity + msg->rear_right_velocity) / 4.0;
         current_velocity_ = avg_wheel_velocity * 0.15; // wheel radius
         
         // Calculate steering angle
-        current_steering_angle_ = (msg->fl_steering_angle + msg->fr_steering_angle) / 2.0;
+        current_steering_angle_ = (msg->front_left_steering + msg->front_right_steering) / 2.0;
     }
     
     void dynamicsLoop()
@@ -177,10 +177,10 @@ private:
         stability_factor_ = 1.0 - std::clamp(instability, 0.0, 1.0);
         
         // Check for wheel slip
-        bool any_wheel_slip = current_wheel_states_.fl_slip_detected ||
-                              current_wheel_states_.fr_slip_detected ||
-                              current_wheel_states_.rl_slip_detected ||
-                              current_wheel_states_.rr_slip_detected;
+        bool any_wheel_slip = current_wheel_states_.front_left_slip ||
+                              current_wheel_states_.front_right_slip ||
+                              current_wheel_states_.rear_left_slip ||
+                              current_wheel_states_.rear_right_slip;
         
         if (any_wheel_slip) {
             stability_factor_ *= 0.7; // Reduce stability factor if slipping
@@ -214,8 +214,8 @@ private:
         }
         
         // Apply slip control
-        if (current_wheel_states_.fl_slip_detected || current_wheel_states_.fr_slip_detected ||
-            current_wheel_states_.rl_slip_detected || current_wheel_states_.rr_slip_detected) {
+        if (current_wheel_states_.front_left_slip || current_wheel_states_.front_right_slip ||
+            current_wheel_states_.rear_left_slip || current_wheel_states_.rear_right_slip) {
             
             RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 500,
                                   "Wheel slip detected - reducing power");

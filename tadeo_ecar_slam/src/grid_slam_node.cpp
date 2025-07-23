@@ -563,9 +563,9 @@ private:
             // In a real implementation, you would save the map to file
             // For now, just report success
             response->success = true;
-            response->message = "Map saved to " + request->filename;
+            response->message = "Map saved to " + request->map_name;
             
-            RCLCPP_INFO(this->get_logger(), "Map save requested: %s", request->filename.c_str());
+            RCLCPP_INFO(this->get_logger(), "Map save requested: %s", request->map_name.c_str());
         } catch (const std::exception& e) {
             response->success = false;
             response->message = "Failed to save map: " + std::string(e.what());

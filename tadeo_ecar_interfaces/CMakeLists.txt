@@ -22,6 +22,7 @@ set(srv_files
   "srv/EmergencyStop.srv"
   "srv/SaveMap.srv"
   "srv/ExecuteBehavior.srv"
+  "srv/NavigateToGoal.srv"
 )
 
 set(action_files

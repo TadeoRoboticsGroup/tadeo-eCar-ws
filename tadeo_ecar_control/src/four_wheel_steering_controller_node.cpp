@@ -180,16 +180,16 @@ private:
     void calculateVehicleVelocity()
     {
         // Calculate vehicle velocity from wheel velocities
-        double avg_wheel_velocity = (current_wheel_states_.fl_velocity + 
-                                     current_wheel_states_.fr_velocity +
-                                     current_wheel_states_.rl_velocity + 
-                                     current_wheel_states_.rr_velocity) / 4.0;
+        double avg_wheel_velocity = (current_wheel_states_.front_left_velocity + 
+                                     current_wheel_states_.front_right_velocity +
+                                     current_wheel_states_.rear_left_velocity + 
+                                     current_wheel_states_.rear_right_velocity) / 4.0;
         
         linear_velocity_ = avg_wheel_velocity * wheel_radius_;
         
         // Calculate angular velocity from wheel steering angles and velocities
-        double front_avg_angle = (current_wheel_states_.fl_steering_angle + 
-                                  current_wheel_states_.fr_steering_angle) / 2.0;
+        double front_avg_angle = (current_wheel_states_.front_left_steering + 
+                                  current_wheel_states_.front_right_steering) / 2.0;
         
         if (std::abs(front_avg_angle) > 1e-6 && std::abs(linear_velocity_) > 1e-6) {
             angular_velocity_ = linear_velocity_ * tan(front_avg_angle) / wheelbase_;
@@ -262,27 +262,26 @@ private:
         status_msg.header.frame_id = base_frame_id_;
         
         // Operational state
-        status_msg.operational_state = "ACTIVE";
-        status_msg.current_mode = current_steering_mode_;
+        status_msg.operational_state = tadeo_ecar_msgs::msg::RobotStatus::AUTONOMOUS;
+        // Current mode removed from RobotStatus message
         
         // Performance metrics
-        status_msg.current_speed = linear_velocity_;
-        status_msg.target_speed = target_linear_x_;
-        status_msg.steering_angle = (current_wheel_states_.fl_steering_angle + 
-                                     current_wheel_states_.fr_steering_angle) / 2.0;
+        // Current speed moved to performance metrics
+        // Target speed removed from RobotStatus message
+        // Steering angle removed from RobotStatus message
         
         // Distance traveled (simplified integration)
         static double total_distance = 0.0;
         static auto last_status_time = this->now();
         double dt = (this->now() - last_status_time).seconds();
         total_distance += std::abs(linear_velocity_) * dt;
-        status_msg.distance_traveled = total_distance;
+        // Distance traveled removed from RobotStatus message
         last_status_time = this->now();
         
         // System status
         status_msg.battery_voltage = 24.0; // Placeholder
         status_msg.battery_percentage = 85.0; // Placeholder
-        status_msg.system_temperature = 35.0; // Placeholder
+        status_msg.battery_temperature = 35.0; // Placeholder
         
         robot_status_pub_->publish(status_msg);
     }

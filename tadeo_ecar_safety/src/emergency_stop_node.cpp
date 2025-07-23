@@ -134,32 +134,38 @@ private:
     void safetyStatusCallback(const tadeo_ecar_msgs::msg::SafetyStatus::SharedPtr msg)
     {
         // Check for safety violations
-        if (msg->emergency_stop) {
+        if (msg->hardware_estop_active || msg->software_estop_active || msg->remote_estop_active) {
             triggerEmergencyStop("Safety system emergency", EmergencyType::SYSTEM_OVERLOAD);
         }
         
-        if (msg->collision_warning && !emergency_active_) {
+        if (msg->collision_detected && !emergency_active_) {
             RCLCPP_WARN(this->get_logger(), "Collision warning active");
         }
         
-        if (msg->stability_warning && !emergency_active_) {
+        if (msg->safety_state == tadeo_ecar_msgs::msg::SafetyStatus::DANGER && !emergency_active_) {
             RCLCPP_WARN(this->get_logger(), "Stability warning active");
         }
         
         // Update safety override
-        safety_override_active_ = msg->safety_override;
+        // safety_override removed from SafetyStatus message
     }
     
     void systemHealthCallback(const tadeo_ecar_msgs::msg::SystemHealth::SharedPtr msg)
     {
         // Check for critical system health issues
-        if (msg->status == "ERROR" || msg->status == "CRITICAL") {
-            std::string reason = "System health critical: " + msg->component_name + " - " + msg->error_message;
+        if (msg->cpu_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR || 
+            msg->cpu_status == tadeo_ecar_msgs::msg::SystemHealth::CRITICAL ||
+            msg->lidar_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR ||
+            msg->camera_status == tadeo_ecar_msgs::msg::SystemHealth::ERROR) {
+            std::string reason = "System health critical";
+            if (!msg->error_messages.empty()) {
+                reason += ": " + msg->error_messages[0];
+            }
             
             // Add to active conditions if not already present
             bool found = false;
             for (auto& condition : active_conditions_) {
-                if (condition.source_component == msg->component_name) {
+                if (condition.source_component == "system_health") {
                     condition.timestamp = std::chrono::steady_clock::now();
                     found = true;
                     break;
@@ -173,7 +179,7 @@ private:
                 condition.severity = SafetyLevel::CRITICAL;
                 condition.timestamp = std::chrono::steady_clock::now();
                 condition.is_active = true;
-                condition.source_component = msg->component_name;
+                condition.source_component = "system_health";
                 
                 active_conditions_.push_back(condition);
                 
@@ -188,7 +194,7 @@ private:
         const std::shared_ptr<tadeo_ecar_interfaces::srv::EmergencyStop::Request> request,
         std::shared_ptr<tadeo_ecar_interfaces::srv::EmergencyStop::Response> response)
     {
-        if (request->activate) {
+        if (request->activate_estop) {
             triggerEmergencyStop("Service call emergency stop", EmergencyType::USER_EMERGENCY);
             response->success = true;
             response->message = "Emergency stop activated";
@@ -199,7 +205,7 @@ private:
         }
         
         RCLCPP_INFO(this->get_logger(), "Emergency stop service called: %s", 
-                    request->activate ? "ACTIVATE" : "RESET");
+                    request->activate_estop ? "ACTIVATE" : "RESET");
     }
     
     void triggerEmergencyStop(const std::string& reason, EmergencyType type)

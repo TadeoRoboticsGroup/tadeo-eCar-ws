@@ -1,0 +1,14 @@
+# Request: Navigation goal with parameters
+geometry_msgs/PoseStamped goal
+float32 tolerance_distance
+float32 tolerance_angle
+float32 max_speed
+bool use_obstacle_avoidance
+string planner_id
+---
+# Response: Path planning result
+bool success
+string message
+nav_msgs/Path path
+float32 path_length
+float32 estimated_time
